@@ -15,6 +15,11 @@ module.exports = {
           target:"http://localhost/foods/vuex/api.php",
           secure: false,
            changeOrigin: false,
+        },
+        "/api/frontapi":{
+          target:"http://localhost/foods/vuex/frontapi.php",
+          secure: false,
+           changeOrigin: false,
         }
     },
 

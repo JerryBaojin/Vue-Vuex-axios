@@ -100,10 +100,10 @@
       },
       onSubmit() {
         let formDates=new FormData(document.getElementsByTagName("form")[0]);
-        console.log()
+
         formDates.append("pics",this.pics)
         formDates.append("act","getAll")
-      //  formDates.append("position",JSON.stringify(this.pos))
+
           this.$http.post("/api/upload",formDates).then(res=>{
 
             if(  res.data==1){
