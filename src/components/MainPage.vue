@@ -1,35 +1,58 @@
 <template>
-  <div class="">
-    <div class="block">
-       <span class="demonstration">默认 Hover 指示器触发</span>
-       <el-carousel height="150px">
-         <el-carousel-item v-for="item in 4" :key="item">
-           <h3>{{ item }}</h3>
-         </el-carousel-item>
-       </el-carousel>
-     </div>
-     <div class="block">
-       <span class="demonstration">Click 指示器触发</span>
-       <el-carousel trigger="click" height="150px">
-         <el-carousel-item v-for="item in 4" :key="item">
-           <h3>{{ item }}</h3>
-         </el-carousel-item>
-       </el-carousel>
-     </div>
-        <el-button type="success" @click="next">成功按钮</el-button>
-        <el-button type="success" @click="changeState">store</el-button>
+<div class="op">
+  <el-select v-model="value" placeholder="请选择">
+    <el-option
+      v-for="item in options"
+      :key="item.value"
+      :label="item.label"
+      :value="item.value">
+    </el-option>
+  </el-select>
+  <el-select v-model="value" placeholder="请选择">
+    <el-option
+      v-for="item in options"
+      :key="item.value"
+      :label="item.label"
+      :value="item.value">
+    </el-option>
+  </el-select>
+  <el-select v-model="value" placeholder="请选择">
+    <el-option
+      v-for="item in options"
+      :key="item.value"
+      :label="item.label"
+      :value="item.value">
+    </el-option>
+  </el-select>
+</div>
 
-        {{test}}
-  </div>
 
 </template>
+
+
 
 <script>
 export default {
   name: 'MainPage',
   data () {
     return {
-
+      options: [{
+        value: '选项1',
+        label: '黄金糕'
+      }, {
+        value: '选项2',
+        label: '双皮奶'
+      }, {
+        value: '选项3',
+        label: '蚵仔煎'
+      }, {
+        value: '选项4',
+        label: '龙须面'
+      }, {
+        value: '选项5',
+        label: '北京烤鸭'
+      }],
+      value: ''
     }
   },
   computed:{
@@ -54,6 +77,12 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+.op{
+  display: flex;
+}
+.op>div{
+  flex: 1;
+}
 .el-carousel__item h3 {
   color: #475669;
   font-size: 14px;

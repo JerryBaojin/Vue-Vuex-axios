@@ -4,6 +4,7 @@ import MainPage from '@/components/MainPage'
 import SelectPage from '@/components/SelectPage'
 import ShopDetails from '@/components/ShopDetails'
 import SignIn from '@/components/SignIn'
+import AdminTable from '@/components/AdminTable'
 
 Vue.use(Router)
 
@@ -29,6 +30,11 @@ export default new Router({
       path: '/SignIn',
       name: 'SignIn',
       component: SignIn
+    },
+    {
+      path: '/Sadmin',
+      name: 'AdminTable',
+      component: AdminTable
     },
   ]
 })

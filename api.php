@@ -2,6 +2,7 @@
 
 $dDates=(array)json_decode(file_get_contents("php://input"));
 empty($dDates)?$dDates=$_POST:null;
+
 if(empty($dDates)){
   if(!isset($_FILES['file'])){
     header("HTTP/1.1 403 Forbidden");
@@ -27,16 +28,28 @@ if(empty($dDates)){
       "errorCode"=>0
     ));
   }
-}elseif(isset($dDates['act'])){
+}elseif(@$dDates['act']=="v"){
   $target=$dDates['filePath'];
   $res=unlink($target);
   echo $res;
-}else{
+}elseif(@$dDates['act']=="getAll"){
+
+
   $db=new mysqli("192.168.20.104","root","102098hchab","weixin");
-  $uid=uniqid();
-  $sql="INSERT INTO `festival` (`sname`, `address`, `type`, `info`, `name`, `phone`, `pics`, `uid`) VALUES ('{$dDates['sname']}', '{$dDates['address']}', '{$dDates['type']}', '{$dDates['info']}', '{$dDates['uname']}', '{$dDates['phone']}','{$dDates['pics']}','{$uid}')";
-  $db=$db->query($sql);
-  echo $db;
+  $uid=(string) time().rand();
+
+  $iexists="select count(*) from festival where `sname`='{$dDates['sname']}' and `phone`='{$dDates['phone']}' limit 1";
+  $re=$db->query($iexists);
+  $row=mysqli_fetch_array($re,MYSQLI_NUM);
+
+  if($row[0]=='1'){
+    echo 0;
+  }else{
+    $sql="INSERT INTO `festival` (`sname`, `address`, `type`, `info`, `name`, `phone`, `pics`, `uid`) VALUES ('{$dDates['sname']}', '{$dDates['address']}', '{$dDates['type']}', '{$dDates['info']}', '{$dDates['uname']}', '{$dDates['phone']}','{$dDates['pics']}','{$uid}')";
+    $db=$db->query($sql);
+    echo $db;
+  }
+
 }
 
 
