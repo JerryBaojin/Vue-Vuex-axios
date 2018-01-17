@@ -5,6 +5,9 @@ import App from './App'
 import router from './router'
 import ElementUi from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
+import "../static/css/amazeui.min.css"
+
+
 import axios from 'axios'
 axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
 
@@ -18,6 +21,7 @@ Vue.config.productionTip = true
 /* eslint-disable no-new */
 new Vue({
   el: '#app',
+  base:"/foods/",
   router,
   store,
   template: '<App/>',

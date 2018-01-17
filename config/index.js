@@ -11,12 +11,12 @@ module.exports = {
     assetsSubDirectory: 'static',
     assetsPublicPath: '/',
     proxyTable: {
-        "/api/upload":{
+        "api/upload":{
           target:"http://localhost/foods/vuex/api.php",
           secure: false,
            changeOrigin: false,
         },
-        "/api/frontapi":{
+        "api/frontapi":{
           target:"http://localhost/foods/vuex/frontapi.php",
           secure: false,
            changeOrigin: false,
@@ -54,7 +54,7 @@ module.exports = {
     // Paths
     assetsRoot: path.resolve(__dirname, '../dist'),
     assetsSubDirectory: 'static',
-    assetsPublicPath: '/',
+    assetsPublicPath: '/foods/',
 
     /**
      * Source Maps

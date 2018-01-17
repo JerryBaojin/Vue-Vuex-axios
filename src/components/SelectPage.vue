@@ -2,7 +2,7 @@
 <el-container>
   <el-header>
     <el-input v-model="input" placeholder="请输入搜索内容"></el-input>
-    <el-button type="primary" icon="el-icon-search">搜索</el-button>
+    <el-button type="primary" @click="search" icon="el-icon-search">搜索</el-button>
   </el-header>
 
   <el-carousel height="150px">
@@ -17,23 +17,23 @@
 <!-- types-->
 
 <el-row class="rrw">
-  <el-col :span="6">
+  <el-col :span="6" >
     <div class="grid-content bg-purple">
-      <img src="static/image/a1.png" alt="">
+      <img src="static/image/a1.png"  @click="filter('火锅')" alt="">
       <span>火锅</span>
     </div>
   </el-col>
   <el-col :span="6"><div class="grid-content bg-purple-light">
-    <img src="static/image/a2.png" alt="">
+    <img src="static/image/a2.png" @click="filter('汤锅')" alt="">
     <span>汤锅</span>
 </div>
 </el-col>
   <el-col :span="6"><div class="grid-content bg-purple">
-    <img src="static/image/a3.png" alt="">
+    <img src="static/image/a3.png" @click="filter('小吃')" alt="">
   <span>小吃</span>
 </div></el-col>
   <el-col :span="6"><div class="grid-content bg-purple-light">
-    <img src="static/image/a4.png" alt="">
+    <img src="static/image/a4.png" @click="filter('河鲜')" alt="">
     <span>河鲜</span>
   </div></el-col>
 </el-row>
@@ -56,35 +56,27 @@
       :value="item.value">
     </el-option>
   </el-select>
-
-
-  <!-- <el-select v-model="value" placeholder="请选择">
-    <el-option
-      v-for="item in options"
-      :key="item.value"
-      :label="item.label"
-      :value="item.value">
-    </el-option>
-  </el-select> -->
 </div>
 
 
     <el-main>
-      <el-card class="box-card">
+      <el-card class="box-card" v-show="itemsArray.length!=0">
+
         <div v-for="(o,index) in itemsArray"  class="text item" @click="toDetails(o)">
+
           <div class="item-left">
-                <img src="//p1.meituan.net/200.0/deal/ae27f950dd176ffc5b3c56c065e70d8145266.jpg@126_0_388_388a%7C267h_267w_2e_100Q" alt="">
+                <img :src="o.image" alt="">
           </div>
           <div class="item-right">
-            <div>妙味香美蛙鱼头</div>
+            <div>{{o.name}}</div>
             <div class="block">
               <el-rate disabled aria-valuenow="1" v-model="index"></el-rate>
             </div>
             <div class="area">
-              东兴区
+              {{o.address}}
             </div>
             <div class="price">
-              <span>火锅</span>
+              <span>{{o.type}}</span>
             </div>
           </div>
         </div>
@@ -107,9 +99,10 @@ import { Loading } from 'element-ui';
       return {
         goodsBeginWith:1,
         itemsArray:[],
+        bakArray:[],
         itemsLoading:false,
         underRequire:false,
-        loaddingText:"",
+        loaddingText:"没有更多了~",
         arriveBottom:true,
         star:1,
         items:[ "https://ss1.bdstatic.com/70cFuXSh_Q1YnxGkpoWK1HF6hhy/it/u=2102900165,11904912&fm=200&gp=0.jpg"],
@@ -173,19 +166,35 @@ import { Loading } from 'element-ui';
          label: '河鲜'
        }
       ],
-
-        Foodvalue: '',
-        areaValue:'',
+      Foodvalue:'',
+      areaValue:"",
         selectedOptions:[],
         input: ''
+      }
+    },
+    watch:{
+      Foodvalue:function(x){
+        this.itemsArray=this.bakArray.filter((v)=>v.type==x);
+      },
+      areaValue:function(x){
+        this.itemsArray=this.bakArray.filter((v)=>{
+          return v.address.match(v)!=null
+        });
       }
     },
     computed:{
 
     },
     methods:{
-      getGoodS:function(loadingInstance=null){
+      search:function(){
 
+      },
+      filter:function(value){
+        this.itemsArray=this.bakArray.filter((v)=>{
+          return v.type==value;
+        });
+      },
+      getGoodS:function(loadingInstance=null){
         let that=this;
         let dates={
           "act":"getGoods",
@@ -199,8 +208,17 @@ import { Loading } from 'element-ui';
               that.arriveBottom=false;//不会再次请求数据
             }else{
               that.goodsBeginWith+=9;
-              console.log(that.goodsBeginWith);
+              res.data.msgBox.map((value,index)=>{
+                if(value.pics!=''){
+                    res.data.msgBox[index].image="../static/"+value.pics.split(",")[0];
+                }else{
+                    res.data.msgBox[index].image="../static/image/400.gif";
+                }
+
+              })
+              that.bakArray=that.bakArray.concat(res.data.msgBox);
               that.itemsArray=that.itemsArray.concat(res.data.msgBox);
+
             }
 
             if(loadingInstance!=null){
@@ -219,8 +237,11 @@ import { Loading } from 'element-ui';
 
       },
       toDetails:function(key){
-        this.$store.commit("newPage","asd");
-        this.$router.push({path:"/shop/1"})
+        let uuid=key.uid;
+        this.$store.commit("newPage",key);
+        console.log(this.$store.state);
+
+        this.$router.push({path:"/shop/"+uuid})
       }
     },
     mounted:function(){
@@ -247,6 +268,16 @@ import { Loading } from 'element-ui';
   }
 </script>
 <style scoped>
+.item-left{
+  overflow: hidden;
+}
+
+.item-left img{
+  padding-top: 20%;
+}
+.rrw:hover {
+  cursor: pointer;
+}
 .op{
   display: flex;
 
@@ -288,7 +319,7 @@ text-align: center;
 }
 .loop{
   width: 100%;
-  height: 320px;
+  height: 150px;
 }
 .item{
   display: flex;

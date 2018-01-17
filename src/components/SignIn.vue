@@ -47,9 +47,7 @@
 
   <el-form-item>
     <el-button type="primary" @click.preventDefault="onSubmit">提交信息</el-button>
-
   </el-form-item>
-
 </el-form>
 </template>
 
@@ -86,12 +84,10 @@
           console.log(res);
       },
       handleRemove:function(res){
-
         let dates={
           "act":"delete",
           "filePath":res.response.path
         }
-
         this.$http.post("/api/upload",dates).then(res=>{
           console.log(res)
         },(e)=>{
@@ -100,7 +96,6 @@
       },
       onSubmit() {
         let formDates=new FormData(document.getElementsByTagName("form")[0]);
-
         formDates.append("pics",this.pics)
         formDates.append("act","getAll")
 
@@ -118,16 +113,7 @@
       }
     },
     mounted:function(){
-      /*
-      let that=this;
-      var map = new BMap.Map("allmap");
-      var myGeo = new BMap.Geocoder();
-      var geolocation = new BMap.Geolocation();
-      geolocation.getCurrentPosition(function(r){
 
-        that.pos=r.point;
-      });
-      */
     }
 
   }

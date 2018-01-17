@@ -9,7 +9,7 @@ if(empty($dDates)){
     return false;
   }
   $dir=date("Y-m-d",time());
-  $pathTemp="upload/".$dir;
+  $pathTemp="static/upload/".$dir;
   if(!file_exists($pathTemp)){
     mkdir($pathTemp,0777,true);
   }
