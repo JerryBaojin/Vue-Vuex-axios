@@ -76,9 +76,6 @@ switch ($dDates['act']) {
     $preparArray["status"]=200;
 
 
-    /*
-    select * from festival right OUTER JOIN festival_record on festival_record.uid = festival.uid
-*/
     //查询是否评价过了
     $sql="select * from festival_record where openid='{$dDates['openid']}' and uid='$uid' limit 1";
     $re=$db->query($sql);
