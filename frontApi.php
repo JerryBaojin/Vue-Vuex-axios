@@ -5,10 +5,19 @@ $preparArray=array(
   "status"=>400
 );
 switch ($dDates['act']) {
-  case 'getAll':
+  case 'PassChecked':
+    $sql="UPDATE  festival set `checked`='1' where id='{$dDates['id']}'";
+    $re=$db->query($sql);
+    if($re){
+        $preparArray["status"]=200;
+    }else{
+        $preparArray["status"]=400;
+    }
 
+    break;
 
-    $sql="select * from festival ";
+  case 'getUnsign':
+    $sql="select * from festival";
     $re=$db->query($sql);
     $tempArr=[];
     while($res=$re->fetch_array(MYSQLI_ASSOC)){
@@ -16,8 +25,19 @@ switch ($dDates['act']) {
     }
     $preparArray["msgBox"]=$tempArr;
     $preparArray["status"]=200;
-  
+
     break;
+  case 'getAll':
+      $sql="select * from festival where checked='1'";
+      $re=$db->query($sql);
+      $tempArr=[];
+      while($res=$re->fetch_array(MYSQLI_ASSOC)){
+        $tempArr[]=$res;
+      }
+      $preparArray["msgBox"]=$tempArr;
+      $preparArray["status"]=200;
+
+      break;
   case 'getGoods':
     $endIn=10;//fetch ten rows
     $preparArray["beginWith"]=$dDates['beginWith'];
@@ -26,7 +46,8 @@ switch ($dDates['act']) {
     $dDates["type"]=="全部"?$dDates["type"]="*":null;
 
 
-    $sql="select {$dDates["type"]} from festival limit {$dDates['beginWith']},{$endIn}";
+    $sql="select {$dDates["type"]} from festival  where checked='1' limit {$dDates['beginWith']},{$endIn}";
+
     $re=$db->query($sql);
     $tempArr=[];
     while($res=$re->fetch_array(MYSQLI_ASSOC)){
@@ -37,8 +58,11 @@ switch ($dDates['act']) {
     break;
   case 'getOneDetails':
     $uid=$dDates['uid']->id;
-
-    $sql="select * from festival where uid='{$uid}' limit 1";
+    if($dDates['openid']=='null'){
+        $preparArray["status"]=100;
+        return false;
+    }
+    $sql="select * from festival where uid='{$uid}' and checked='1' limit 1";
     $re=$db->query($sql);
     if($re->num_rows==0){
         $preparArray["status"]=400;
@@ -51,6 +75,10 @@ switch ($dDates['act']) {
     $preparArray["msgBox"]=$tempArr;
     $preparArray["status"]=200;
 
+
+    /*
+    select * from festival right OUTER JOIN festival_record on festival_record.uid = festival.uid
+*/
     //查询是否评价过了
     $sql="select * from festival_record where openid='{$dDates['openid']}' and uid='$uid' limit 1";
     $re=$db->query($sql);

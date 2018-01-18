@@ -102,7 +102,7 @@ import { Loading } from 'element-ui';
     name:"SelectPage",
     data() {
       return {
-        goodsBeginWith:1,
+        goodsBeginWith:0,
         selectPageArray:[],
         itemsArray:[],
         bakArray:[],
@@ -190,11 +190,8 @@ import { Loading } from 'element-ui';
             }else{
               this.itemsArray=this.selectPageArray.filter((v)=>v.type==x).filter((v)=> v.address.match(that.areaValue)!=null )
             }
-
           }
-
         }
-
       },
       areaValue:function(x){
 
@@ -205,35 +202,24 @@ import { Loading } from 'element-ui';
           this.itemsArray=this.bakArray;
           return false;
         }
-
         if(this.Foodvalue=='' || this.Foodvalue=='所有区域'){
           tg=true;
         }else{
             tg=false;
         }
-
         if(x=='所有区域'  && tg){
           this.itemsArray=this.selectPageArray
         }else{
-
           if(tg){
               this.itemsArray=this.selectPageArray.filter((v)=>v.address.match(x)!=null);
           }else{
-
             if(x=='所有区域'){
                   this.itemsArray=this.selectPageArray.filter((v)=>v.type==that.Foodvalue);
             }else{
                 this.itemsArray=this.selectPageArray.filter((v)=>v.type==that.Foodvalue).filter((v)=> v.address.match(x)!=null )
             }
-
-
-
-
           }
-
-
         }
-
       }
     },
     computed:{

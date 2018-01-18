@@ -45,8 +45,8 @@ if(empty($dDates)){
   if($row[0]=='1'){
     echo 0;
   }else{
-
-    $sql="INSERT INTO `festival` (`sname`, `address`, `type`, `info`, `name`, `phone`, `pics`, `uid`) VALUES ('{$dDates['sname']}', '{$dDates['address']}', '{$dDates['type']}', '{$dDates['info']}', '{$dDates['uname']}', '{$dDates['phone']}','{$dDates['pics']}',{$uid})";
+    $time=date("Y-m-d",time());
+    $sql="INSERT INTO `festival` (`sname`, `address`, `type`, `info`, `name`, `phone`, `pics`, `uid`,`time`) VALUES ('{$dDates['sname']}', '{$dDates['address']}', '{$dDates['type']}', '{$dDates['info']}', '{$dDates['uname']}', '{$dDates['phone']}','{$dDates['pics']}',{$uid}),'{$time}'";
 
     $db=$db->query($sql);
     echo $db;
