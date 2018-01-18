@@ -249,7 +249,7 @@ import { Loading } from 'element-ui';
           "type":type,
           "beginWith":that.goodsBeginWith
         }
-        this.$http.post("api/frontapi",dates).then((res)=>{
+        this.$http.post("api/frontapi.php",dates).then((res)=>{
           if(res.data.status==200){
             if(res.data.msgBox.length<1){
               that.loaddingText="没有更多了~"
@@ -258,9 +258,9 @@ import { Loading } from 'element-ui';
               that.goodsBeginWith+=9;
               res.data.msgBox.map((value,index)=>{
                 if(value.pics!=''){
-                    res.data.msgBox[index].image="../"+value.pics.split(",")[0];
+                    res.data.msgBox[index].image=value.pics.split(",")[0];
                 }else{
-                    res.data.msgBox[index].image="../static/image/400.gif";
+                    res.data.msgBox[index].image="static/image/400.gif";
                 }
                 res.data.msgBox[index].star=Math.round(value.star/value.views);
               })
@@ -312,12 +312,12 @@ import { Loading } from 'element-ui';
       let dates={
         "act":"getAll"
       }
-      this.$http.post("api/frontapi",dates).then(res=>{
+      this.$http.post("api/frontapi.php",dates).then(res=>{
         res.data.msgBox.map((value,index)=>{
           if(value.pics!=''){
-              res.data.msgBox[index].image="../"+value.pics.split(",")[0];
+              res.data.msgBox[index].image=value.pics.split(",")[0];
           }else{
-              res.data.msgBox[index].image="../static/image/400.gif";
+              res.data.msgBox[index].image="static/image/400.gif";
           }
           res.data.msgBox[index].star=Math.round(value.star/value.views);
         })

@@ -59,13 +59,14 @@ switch ($dDates['act']) {
   case 'getOneDetails':
     $uid=$dDates['uid']->id;
     if($dDates['openid']=='null'){
-        $preparArray["status"]=100;
-        return false;
+        $preparArray["tem"]=100;
+
     }
     $sql="select * from festival where uid='{$uid}' and checked='1' limit 1";
     $re=$db->query($sql);
     if($re->num_rows==0){
         $preparArray["status"]=400;
+        echo json_encode($preparArray);
         return false;
     }
     $tempArr=[];

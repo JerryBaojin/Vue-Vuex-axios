@@ -108,7 +108,7 @@
       handleDelete(v,i){
         let that=this;
           this.$confirm('确认通过吗？').then(()=>{
-              this.$http.post("api/frontapi",{
+              this.$http.post("api/frontapi.php",{
                 "id":v,
                 "act":"PassChecked"
               }).then((res)=>{
@@ -146,12 +146,12 @@
           "act":"getUnsign"
         }
 
-        this.$http.post("api/frontapi",dates).then(res=>{
+        this.$http.post("api/frontapi.php",dates).then(res=>{
           res.data.msgBox.map((value,index)=>{
             if(value.pics!=''){
                 res.data.msgBox[index].image=value.pics.split(",");
             }else{
-                res.data.msgBox[index].image=["../static/image/400.gif"];
+                res.data.msgBox[index].image=["static/image/400.gif"];
             }
             res.data.msgBox[index].star=Math.round(value.star/value.views);
           })

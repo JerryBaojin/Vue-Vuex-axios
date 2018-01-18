@@ -35,7 +35,7 @@
 
   <el-form-item label="联系方式" prop="phone" :rules="[
       { required: true, message: '联系方式不能为空'},
-    
+
     ]" required>
     <el-input v-model="form.phone" class="short" name="phone" type="number" ></el-input>
   </el-form-item>
@@ -92,7 +92,7 @@
           "act":"delete",
           "filePath":res.response.path
         }
-        this.$http.post("/api/api",dates).then(res=>{
+        this.$http.post("api/api.php",dates).then(res=>{
           __this.pics=list;
         },(e)=>{
           console.log(e);
@@ -118,7 +118,7 @@
         formDates.append("pics",pics)
         formDates.append("act","getAll")
 
-          this.$http.post("/api/api",formDates).then(res=>{
+          this.$http.post("api/api.php",formDates).then(res=>{
 
             if(  res.data==1){
               this.$message('提交成功!')

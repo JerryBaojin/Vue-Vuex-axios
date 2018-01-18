@@ -7,7 +7,7 @@
 
            <el-carousel height="240px" style="overflow:hidden;">
              <el-carousel-item v-for="item of dates.image" :key="item">
-               <h3>    <img :src="'../'+item" class="am-img-responsive" alt="" /></h3>
+               <h3>    <img :src="item" class="am-img-responsive" alt="" /></h3>
              </el-carousel-item>
            </el-carousel>
          </div>
@@ -174,6 +174,7 @@ import { Loading } from 'element-ui';
             },(e)=>{
               console.log(e)
             })
+
         })
         .catch(e=>{
           console.log(e)
@@ -184,7 +185,10 @@ import { Loading } from 'element-ui';
       let loadingInstance1 = Loading.service({ fullscreen: true });
       let that=this;
       let openid=localStorage.getItem("openid") || "null";
-      this.$http.post("api/frontapi",{"act":"getOneDetails","uid":this.$route.params,"openid":openid}).then((res)=>{
+      this.$http.post("api/frontapi.php",{"act":"getOneDetails","uid":this.$route.params,"openid":openid}).then((res)=>{
+        if(res.data.tem==100){
+                  this.$message('请在微信端打开才能评价!');
+        }
         if(res.data.status==200){
           if(res.data.time==303){
               that.ableToComments=false;
@@ -202,16 +206,15 @@ import { Loading } from 'element-ui';
             }
             that.dates=res.data.msgBox[0];
 
-              this.$nextTick(() => { // 以服务的方式调用的 Loading 需要异步关闭
-                loadingInstance1.close();
-              });
-        }else if(res.data.status==200){
-                  this.$message('请在微信端打开!');
         }
         else{
             this.$message('id错误!');
             this.$router.push({path:"/pickpage/"});
         }
+
+                      this.$nextTick(() => { // 以服务的方式调用的 Loading 需要异步关闭
+                        loadingInstance1.close();
+                      });
       },(e)=>{
           this.$message('网络错误!');
       })
