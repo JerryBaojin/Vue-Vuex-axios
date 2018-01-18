@@ -5,12 +5,28 @@ $preparArray=array(
   "status"=>400
 );
 switch ($dDates['act']) {
+  case 'getAll':
+
+
+    $sql="select * from festival ";
+    $re=$db->query($sql);
+    $tempArr=[];
+    while($res=$re->fetch_array(MYSQLI_ASSOC)){
+      $tempArr[]=$res;
+    }
+    $preparArray["msgBox"]=$tempArr;
+    $preparArray["status"]=200;
+  
+    break;
   case 'getGoods':
-    $endIn=$dDates['beginWith']+9;
+    $endIn=10;//fetch ten rows
     $preparArray["beginWith"]=$dDates['beginWith'];
     $preparArray["endIn"]=$endIn;
 
-    $sql="select * from festival limit {$dDates['beginWith']},{$endIn}";
+    $dDates["type"]=="全部"?$dDates["type"]="*":null;
+
+
+    $sql="select {$dDates["type"]} from festival limit {$dDates['beginWith']},{$endIn}";
     $re=$db->query($sql);
     $tempArr=[];
     while($res=$re->fetch_array(MYSQLI_ASSOC)){
@@ -24,18 +40,30 @@ switch ($dDates['act']) {
 
     $sql="select * from festival where uid='{$uid}' limit 1";
     $re=$db->query($sql);
+    if($re->num_rows==0){
+        $preparArray["status"]=400;
+        return false;
+    }
     $tempArr=[];
     while($res=$re->fetch_array(MYSQLI_ASSOC)){
       $tempArr[]=$res;
     }
     $preparArray["msgBox"]=$tempArr;
     $preparArray["status"]=200;
+
+    //查询是否评价过了
+    $sql="select * from festival_record where openid='{$dDates['openid']}' and uid='$uid' limit 1";
+    $re=$db->query($sql);
+
+    if($re->num_rows!=0){
+        $preparArray["time"]=303;
+    }else{
+        $preparArray["time"]=200;
+    }
     break;
   case 'makeComments':
   //
     $openid=$dDates['openid'];
-
-
     $sql="select * from festival_comments where openid ='{$openid}' limit 1";
     $re=$db->query($sql);
     if($re->num_rows==0){
@@ -43,12 +71,14 @@ switch ($dDates['act']) {
       $preparArray["msgBox"]="未找到用户信息";
     }else{
       //query the record table
-      $sql="select * from festival_record where openid ='{$openid}' limit 1";
+      $uid=$dDates['uid'];
+
+      $sql="select * from festival_record where openid ='{$openid}' and uid='{$uid}' limit 1";
       $re=$db->query($sql);
-    
+
       if($re->num_rows==0){
         $time=date("Y-m-d H-i-s",time());
-        $sql="INSERT into festival_record (`openid`,`uid`,`time`) values ('{$openid}','{$dDates['uid']}','$time')";
+        $sql="INSERT into festival_record (`openid`,`uid`,`time`,`star`) values ('{$openid}','{$dDates['uid']}','$time','{$dDates['star']}')";
         $res=$db->query($sql);
         if($res){
           $preparArray["status"]=200;

@@ -28,7 +28,7 @@ if(empty($dDates)){
       "errorCode"=>0
     ));
   }
-}elseif(@$dDates['act']=="v"){
+}elseif(@$dDates['act']=='delete'){
   $target=$dDates['filePath'];
   $res=unlink($target);
   echo $res;
@@ -53,23 +53,6 @@ if(empty($dDates)){
   }
 
 }
-
-
-// $date=$_FILES;
-// switch ($date) {
-// case "picUpload":
-//
-//   break;
-//
-// case "infosUpload":
-// $db=new mysqli("192.168.20.104","root","981020hchab","weixin");
-// $dates=$_REQUEST;
-//   $sql="INSERT INTO `festival` (`name`, `phone`, `detailsAddr`, `type`, `imgPath`, `locationInfos`) VALUES ('{$dates['name']}', '{$dates['phone']}', '{$dates['addr']}', '{$dates['type']}', '{$dates['imgPath']}', '{$dates['location']}')";
-// break;
-// default:
-//   # code...
-//   break;
-// }
 
 
   ?>

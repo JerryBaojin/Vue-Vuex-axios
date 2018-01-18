@@ -11,12 +11,12 @@ module.exports = {
     assetsSubDirectory: 'static',
     assetsPublicPath: '/',
     proxyTable: {
-        "api/upload":{
+        "/api/api":{
           target:"http://localhost/foods/vuex/api.php",
           secure: false,
            changeOrigin: false,
         },
-        "api/frontapi":{
+        "/api/frontapi":{
           target:"http://localhost/foods/vuex/frontapi.php",
           secure: false,
            changeOrigin: false,

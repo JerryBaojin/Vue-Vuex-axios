@@ -7,7 +7,7 @@
 
            <el-carousel height="240px" style="overflow:hidden;">
              <el-carousel-item v-for="item of dates.image" :key="item">
-               <h3>    <img :src="'../../static/'+item" class="am-img-responsive" alt="" /></h3>
+               <h3>    <img :src="'../'+item" class="am-img-responsive" alt="" /></h3>
              </el-carousel-item>
            </el-carousel>
          </div>
@@ -28,7 +28,7 @@
           text-color="#ff9900"
          score-template="{value}">
         </el-rate>
-        <span class="am-u-sm-4 am-text-right"><small>高于周边商家{{dates.star}}%</small></span>
+        <span class="am-u-sm-3 am-text-right"><small>热度{{dates.views}}</small></span>
       </div>
       <hr />
       <div class="am-margin-horizontal-lg details">
@@ -36,9 +36,17 @@
         <h3>电话：<small><a :href="'tel:'+dates.phone">{{dates.phone}}<span class="am-icon-angle-right am-margin-left-sm"></span></a></small></h3>
         <h3>类型：<small>{{dates.type}}</small></h3>
         <h3>热度：<small><span>{{dates.views}}</span></small></h3>
+        <h3>简介：
+            <div class="tip am-margin-horizontal-lg">
+              <p>{{dates.info}}</p>
+            </div>
+          </h3>
       </div>
+
+
+
       <hr />
-      <h4 class="am-margin-horizontal-lg">点击评价：
+      <h4 class="am-margin-horizontal-lg" v-if="ableToComments">点击评价：
         <el-rate  @change="change"  :disabled="ableComments"  aria-valuenow="1" v-model="commentStar" ></el-rate>
       </h4>
     </div>
@@ -49,13 +57,15 @@
   </div>
 </template>
 <script>
+import { Loading } from 'element-ui';
   export default{
     name:"ShopDetails",
     data(){
       return {
         commentStar:3.4,
         ableComments:false,
-        nowStar:4.5,
+        nowStar:0,
+        ableToComments:true,
         dates:''
       }
     },
@@ -64,25 +74,20 @@
     },
     methods:{
       change:function(e){
-          let openid=localStorage.getItem("openid");
-         let times=this.dates['uid'];
-          let that=this;
-
-
+        let openid=localStorage.getItem("openid");
+        let times=this.dates['uid'];
+        let that=this;
         //localStorege
-        let bTimes=localStorage.getItem("zanTimes");
-
         this.$confirm('确认评论吗？').then(()=>{
-          if(!bTimes || bTimes==0){
-
-            this.$http.post("/api/frontapi",{"act":"makeComments","openid":openid,"uid":times}).then(res=>{
+            this.$http.post("api/frontapi.php",{"act":"makeComments","openid":openid,"uid":times,"star":e}).then(res=>{
             switch (res.data.status) {
               case 304:
                 //location.href="main.php";
                   this.$message("未找到用户信息!");
                 break;
                 case 303:
-                    this.$message("只能评价一次!");
+                    this.$message("之前已经评论过了!");
+                      that.ableComments=true;
                   break;
                   case 200:
                       this.$message("评价成功!");
@@ -96,11 +101,8 @@
               console.log(e)
             })
             //update components status
-            that.ableComments=true;
-          }else{
-            this.$message("只能评价一次!");
-            return false;
-          }
+        //    that.ableComments=true;
+
         })
         .catch(e=>{
           console.log(e)
@@ -109,31 +111,55 @@
     },
     mounted:function(){
 
+      let loadingInstance1 = Loading.service({ fullscreen: true });
+
       let that=this;
-      if(this.$store.state.page){
-        this.dates=this.$store.state.page;
-      }else{
-        this.$http.post("/api/frontapi",{"act":"getOneDetails","uid":this.$route.params}).then((res)=>{
-          if(res.status==200){
-              if(res.data.msgBox[0].pics!=''){
-                  res.data.msgBox[0].image=res.data.msgBox[0].pics.split(",");
-              }else{
-                  res.data.msgBox[0].image="../static/image/400.gif";
-              }
-            //  that.nowStar=parseInt(res.data.msgBox[0].star);
-              that.dates=res.data.msgBox[0];
-          }else{
-              this.$message('网络错误!');
+      let openid=localStorage.getItem("openid");
+
+      this.$http.post("api/frontapi",{"act":"getOneDetails","uid":this.$route.params,"openid":openid}).then((res)=>{
+
+        if(res.data.status==200){
+
+          if(res.data.time==303){
+
+              that.ableToComments=false;
           }
-        },(e)=>{
-          console.log(e)
-        })
-      }
+            if(res.data.msgBox[0].pics!=''){
+                res.data.msgBox[0].image=res.data.msgBox[0].pics.split(",");
+            }else{
+                res.data.msgBox[0].image="../static/image/400.gif";
+            }
+
+            if(res.data.msgBox[0].views!='0'){
+                that.nowStar=parseInt(res.data.msgBox[0].star)/parseInt(res.data.msgBox[0].views);
+            }
+
+
+            that.dates=res.data.msgBox[0];
+              this.$nextTick(() => { // 以服务的方式调用的 Loading 需要异步关闭
+                loadingInstance1.close();
+              });
+        }else{
+            this.$message('id错误!');
+            this.$router.push({path:"/pickpage/"});
+        }
+      },(e)=>{
+          this.$message('网络错误!');
+      })
+
+      // if(this.$store.state.page){
+      //   this.dates=this.$store.state.page;
+      // }else{
+      //
+      // }
 
     }
   }
 </script>
 <style scoped>
+input[type=file]{
+  display: none !important;
+}
 .am-u-sm-3{
   width: 26%;
 }
@@ -158,5 +184,18 @@ height: 240px;
 
 .details small {
   float: right;
+}
+.tip{
+      text-indent: 28px;
+  padding: 8px 16px;
+background-color: #ecf8ff;
+border-radius: 4px;
+border-left: 5px solid #50bfff;
+margin: 20px 20px;
+}
+.tip p{
+  font-size: 14px;
+color: #5e6d82;
+
 }
 </style>

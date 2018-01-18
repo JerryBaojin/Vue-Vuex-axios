@@ -57,7 +57,7 @@ export default {
   },
   computed:{
       test(){
-  return  this.$store.state.page
+          return  this.$store.state.page
       }
   },
   methods:{
