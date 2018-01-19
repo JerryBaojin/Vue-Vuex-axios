@@ -19,7 +19,7 @@
     </el-table-column>
     <el-table-column
       label="日期"
-      width="120">
+      width="100">
       <template slot-scope="scope">{{ scope.row.time }}</template>
     </el-table-column>
     <el-table-column
@@ -39,6 +39,11 @@
       label="地址"
       width="120">
       <template slot-scope="scope">{{ scope.row.address }}</template>
+    </el-table-column>
+    <el-table-column
+      label="详细地址"
+      width="120">
+      <template slot-scope="scope">{{ scope.row.detailsAddr }}</template>
     </el-table-column>
     <el-table-column
       label="类型"
@@ -86,7 +91,7 @@
 
  </el-table>
   </el-table>
-  <div style="margin-top: 20px">
+  <div style="margin-top: 20px;display:none;">
     <el-button @click="toggleSelection([tableData3[1], tableData3[2]])">切换第二、第三行的选中状态</el-button>
     <el-button @click="toggleSelection()">取消选择</el-button>
   </div>
@@ -140,26 +145,31 @@
         this.multipleSelection = val;
       }
     },mounted:function(){
-        document.getElementById("app").style.maxWidth="100%";
-        let that=this;
-        let dates={
-          "act":"getUnsign"
+
+        if(prompt("token")=="colo"){
+          document.getElementById("app").style.maxWidth="100%";
+          let that=this;
+          let dates={
+            "act":"getUnsign"
+          }
+
+          this.$http.post("api/frontapi.php",dates).then(res=>{
+            res.data.msgBox.map((value,index)=>{
+              if(value.pics!=''){
+                  res.data.msgBox[index].image=value.pics.split(",");
+              }else{
+                  res.data.msgBox[index].image=["static/image/400.gif"];
+              }
+              res.data.msgBox[index].star=Math.round(value.star/value.views);
+            })
+              that.sqlDates=res.data.msgBox;
+              console.log(that.sqlDates);
+          },(e)=>{
+            console.log(e)
+          })
         }
 
-        this.$http.post("api/frontapi.php",dates).then(res=>{
-          res.data.msgBox.map((value,index)=>{
-            if(value.pics!=''){
-                res.data.msgBox[index].image=value.pics.split(",");
-            }else{
-                res.data.msgBox[index].image=["static/image/400.gif"];
-            }
-            res.data.msgBox[index].star=Math.round(value.star/value.views);
-          })
-            that.sqlDates=res.data.msgBox;
-            console.log(that.sqlDates);
-        },(e)=>{
-          console.log(e)
-        })
+
     }
   }
 </script>

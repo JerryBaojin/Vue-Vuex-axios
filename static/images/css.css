@@ -1,0 +1,22 @@
+@charset "utf-8";
+/* CSS Document */
+*{margin:0;padding: 0}
+html,body{height:100%} 
+body{ background:#3dc7f8 url(bg.jpg); background-position:bottom;background-repeat: no-repeat; background-size: 100%;}
+@media screen and (min-width: 380px) {
+.title{margin:0 auto;width:320px;padding:60px 0px 20px}
+.title img{width:100%;}
+.szq,.dxq,.zzx,.wyx,.lcs{width:120px; margin:22px auto 0px;}
+.szq img,.dxq img,.zzx img,.wyx img,.lcs img{width:100%; text-align: center;}
+.map{width:200px;margin:22px auto 30px}
+.map img{width:200px; text-align: center;}
+}
+
+@media screen and (max-width: 380px) {
+.title{margin:0 auto;width:80%;padding:40px 0px 10px}
+.title img{width:100%;}
+.szq,.dxq,.zzx,.wyx,.lcs{width:110px; margin:12px auto 0px;}
+.szq img,.dxq img,.zzx img,.wyx img,.lcs img{width:100%; text-align: center;}
+.map{width:180px;margin:20px auto 30px}
+.map img{width:100%; text-align: center;}
+}

@@ -1,5 +1,5 @@
 <template id="">
-  <el-form  :model="form"   ref="form"  label-width="80px">
+  <el-form  :model="form"   ref="form"  label-width="100px">
 
   <el-form-item label="商店名称"  prop="name" :rules="[
       { required: true, message: '商店名称不能为空'}
@@ -8,11 +8,28 @@
     <el-input v-model="form.name" class="short" name="sname"  type="text" :maxlength="20"></el-input>
   </el-form-item>
 
-  <el-form-item label="商铺地址" prop="address" :rules="[
-      { required: true, message: '商铺地址不能为空'}
-    ]" label-position="left">
-    <el-input v-model="form.address" class="short" name="address"  type="text" :maxlength="20"></el-input>
+  <el-form-item label="商铺位置"  prop="detailsAddr" :rules="[
+      { required: true, message: '商铺位置不能为空'}
+    ]"
+    >
+    <el-input v-model="form.detailsAddr" class="short" name="detailsAddr"  type="text" :maxlength="20"></el-input>
   </el-form-item>
+
+
+  <el-form-item label="商铺区域"  prop="address" :rules="[
+      { required: true, message: '商铺区域不能为空'}
+    ]" required>
+    <el-select v-model="form.address" name="address" placeholder="请选择商铺区域">
+      <el-option label="市中区" value="市中区"></el-option>
+      <el-option label="东兴区" value="东兴区"></el-option>
+      <el-option label="隆昌市" value="隆昌市"></el-option>
+      <el-option label="资中县" value="资中县"></el-option>
+      <el-option label="威远县" value="威远县"></el-option>
+    </el-select>
+  </el-form-item>
+
+
+
 
   <el-form-item label="餐饮类型"  prop="type" :rules="[
       { required: true, message: '餐饮类型不能为空'}
@@ -29,7 +46,19 @@
     <el-input type="textarea" class="short" name="info" v-model="form.desc"></el-input>
   </el-form-item>
 
-  <el-form-item label="店主名称">
+  <el-form-item label="地理位置">
+    <div id="map" style="height:200px;max-width:320px;">
+    </div>
+    <div class="">
+      当前位置:{{position.p.lat}},{{position.p.lng}};
+
+    </div>
+    <div class="">
+      详细地址:{{position.details}}
+    </div>
+  </el-form-item>
+
+  <el-form-item label="店主名称" style="display:none;">
     <el-input v-model="form.uname" class="short" name="uname" type="text" ></el-input>
   </el-form-item>
 
@@ -43,16 +72,16 @@
   <el-upload
   class="upload"
   accept="image/*"
-  action="/api/api"
-  :limit="3"
+  action="api/api.php"
+  :limit="10"
   :on-exceed="handleExceed"
   :on-preview="handlePreview"
   :on-success="handleSuccess"
   :on-remove="handleRemove"
-
+  :before-upload="beforeUpload"
   list-type="picture">
-  <el-button size="small" type="primary">点击上传</el-button>
-  <div slot="tip" class="el-upload__tip">只能上传jpg/png文件,不能超过3张</div>
+  <el-button size="small" type="primary">点击选择上传图片</el-button>
+  <div slot="tip" class="el-upload__tip">只能上传jpg/png文件,不能超过10张</div>
   </el-upload>
 
   <el-form-item>
@@ -66,19 +95,40 @@
     name:"SignIn",
     data() {
       return {
+        position:{
+            "p":{
+              'lat':0,
+              "lng":0
+            },
+            "details":''
+          },
         pos:[],
         form: {
           name:'',
           address:'',
           type:'',
-          phone:''
+          phone:'',
+          detailsAddr:'',
+
         },
-          pics:[]
+          pics:[],
+          isDraggled:false,
+          removePic:''
       }
       },
     methods: {
       handleExceed:function(res){
-        this.$message('最多只能上传三张图片!');
+        this.$message('最多只能上传10张图片!');
+      },
+      beforeUpload:function(file){
+      // file.size/1000000>=2
+      let size=file.size/1000000;
+        if(size>=2){
+          this.removePic=file.name;
+          this.$message("单个文件不能超过2M");
+          this.$message("单个文件不能超过2M");
+          return false;
+        }
       },
       handleSuccess:function(res,file,list){
         this.pics=list;
@@ -87,6 +137,14 @@
 
       },
       handleRemove:function(res,list){
+
+        if(res.name==this.removePic){
+          //不处理
+          this.removePic='';
+          return false;
+        }
+          this.removePic='';
+
         let  __this=this;
         let dates={
           "act":"delete",
@@ -99,40 +157,88 @@
         })
       },
       onSubmit(formName) {
-        this.$refs[formName].validate((valid) => {
-          if (valid) {
-            alert('submit!');
-          } else {
-            console.log('error submit!!');
+
+        this.$confirm("目前暂不支持修改数据,请确认无误后提交!").then(()=>{
+          if(!this.isDraggled){
+            this.$message("请拖动地图，定位自己的位置!");
             return false;
           }
-        });
+          let pics=new Array();
+          this.pics.map((v)=>{
+            pics.push(v.response.path);
+          })
+          let formDates=new FormData(document.getElementsByTagName("form")[0]);
+          formDates.append("pics",pics)
+          formDates.append("act","getAll")
 
+          formDates.append("position",JSON.stringify(this.position));
+          this.$refs[formName].validate((valid) => {
+            if (valid) {
+              this.$http.post("api/api.php",formDates).then(res=>{
+
+                if(  res.data==1){
+                  this.$message('录入成功!待审核成功后，方可在首页展示！请勿重复提交！')
+                }else if(res.data==0){
+                  this.$message('已经报过名了!');
+                }
+
+              },(e)=>{
+                this.$message('上传发生异常!')
+              })
+            } else {
+              this.$message('上传发生异常!')
+              return false;
+            }
+          });
+            return false;
+        },e=>{
+          console.log(e);
           return false;
-        let pics=new Array();
-        this.pics.map((v)=>{
-          pics.push(v.response.path);
         })
 
-        let formDates=new FormData(document.getElementsByTagName("form")[0]);
-        formDates.append("pics",pics)
-        formDates.append("act","getAll")
 
-          this.$http.post("api/api.php",formDates).then(res=>{
+      },
+      resPosition(d){
+        let postion=this.position;
+        let dates=d;
+          postion.p=dates;
+          this.$jsonp(`http://api.map.baidu.com/geocoder/v2/?location=${dates['lat']},${dates['lng']}&output=json&pois=0&ak=sabTgEGc8497zQY2x4sN0z13E3CwsnXM&extensions_town=extensions_town&latest_admin=1`).then(res=>{
+            postion.details=res.result.formatted_address;
 
-            if(  res.data==1){
-              this.$message('提交成功!')
-            }else if(res.data==0){
-              this.$message('已经报过名了!');
-            }
-
-          },(e)=>{
-            this.$message('上传发生异常!')
+          },e=>{
+            console.log(e)
           })
       }
+
     },
     mounted:function(){
+      document.title="大千美食节"
+      let that=this;
 
+      var map = new BMap.Map("map");
+      // 创建地图实例
+      var point = new BMap.Point(105.06648486343,29.593761858443);
+      // 创建点坐标
+      map.centerAndZoom(point, 15);
+      map.addControl(new BMap.ScaleControl());
+      // 初始化地图，设置中心点坐标和地图级别
+      map.addControl(new BMap.MapTypeControl({type:BMAP_MAPTYPE_CONTROL_HORIZONTAL,mapTypes:[BMAP_NORMAL_MAP ,BMAP_SATELLITE_MAP]}));
+      map.enableScrollWheelZoom(true);
+      map.setCurrentCity("内江");
+
+
+
+      map.centerAndZoom(point, 15);
+      var marker = new BMap.Marker(point);        // 创建标注
+      map.addOverlay(marker);
+      marker.enableDragging();
+      //初始化
+      this.resPosition(marker.getPosition());
+
+      marker.addEventListener("dragend", function(e){
+        that.isDraggled=true
+        that.resPosition(e.point);
+      })
     }
 
   }
@@ -154,4 +260,5 @@ form{
   ul li{
     max-width: 320px;
   }
+
 </style>

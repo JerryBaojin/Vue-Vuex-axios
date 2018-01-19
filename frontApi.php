@@ -4,7 +4,19 @@ $db=new mysqli("192.168.20.104","root","102098hchab","weixin");
 $preparArray=array(
   "status"=>400
 );
+
 switch ($dDates['act']) {
+  case 'JSSDK':
+  require_once "../jssdk.php";
+   $jssdk = new JSSDK("wx6f1fa092a4f5e263","51eb6b33ee16bfa2e213c037f9d4c4f8");
+   $signPackage = $jssdk->GetSignPackage();
+ 	$x=array(
+ 		"signPackage"=>$signPackage
+ 	);
+   echo json_encode($x);
+   return false;
+
+    break;
   case 'PassChecked':
     $sql="UPDATE  festival set `checked`='1' where id='{$dDates['id']}'";
     $re=$db->query($sql);
@@ -13,14 +25,14 @@ switch ($dDates['act']) {
     }else{
         $preparArray["status"]=400;
     }
-
     break;
 
   case 'getUnsign':
-    $sql="select * from festival";
+    $sql="select * from festival order by id desc";
     $re=$db->query($sql);
     $tempArr=[];
     while($res=$re->fetch_array(MYSQLI_ASSOC)){
+
       $tempArr[]=$res;
     }
     $preparArray["msgBox"]=$tempArr;
@@ -58,11 +70,14 @@ switch ($dDates['act']) {
     break;
   case 'getOneDetails':
     $uid=$dDates['uid']->id;
+
+
     if($dDates['openid']=='null'){
         $preparArray["tem"]=100;
 
     }
     $sql="select * from festival where uid='{$uid}' and checked='1' limit 1";
+
     $re=$db->query($sql);
     if($re->num_rows==0){
         $preparArray["status"]=400;
@@ -87,6 +102,23 @@ switch ($dDates['act']) {
         $preparArray["time"]=200;
     }
     break;
+  case 'mapDetails':
+
+      if($dDates['id']!='all'){
+          $sql="select * from festival where uid='{$dDates['id']}' and checked='1' limit 1";
+      }else{
+          $sql="select * from festival where  checked='1'";
+      }
+      $tempArr=[];
+        $re=$db->query($sql);
+      while($res=$re->fetch_array(MYSQLI_ASSOC)){
+        $tempArr[]=$res;
+      }
+      $preparArray["msgBox"]=$tempArr;
+      $preparArray["status"]=200;
+
+      break;
+
   case 'makeComments':
   //
     $openid=$dDates['openid'];

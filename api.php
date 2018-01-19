@@ -34,20 +34,18 @@ if(empty($dDates)){
   echo $res;
 }elseif(@$dDates['act']=="getAll"){
 
-
   $db=new mysqli("192.168.20.104","root","102098hchab","weixin");
   $uid=(string) time().rand();
 
   $iexists="select count(*) from festival where `sname`='{$dDates['sname']}' and `phone`='{$dDates['phone']}' limit 1";
   $re=$db->query($iexists);
   $row=mysqli_fetch_array($re,MYSQLI_NUM);
+  $time=date("Y-m-d H-i-s",time());
 
   if($row[0]=='1'){
     echo 0;
   }else{
-    $time=date("Y-m-d",time());
-    $sql="INSERT INTO `festival` (`sname`, `address`, `type`, `info`, `name`, `phone`, `pics`, `uid`,`time`) VALUES ('{$dDates['sname']}', '{$dDates['address']}', '{$dDates['type']}', '{$dDates['info']}', '{$dDates['uname']}', '{$dDates['phone']}','{$dDates['pics']}',{$uid}),'{$time}'";
-
+    $sql="INSERT INTO `festival` (`sname`, `address`, `type`, `info`, `name`, `phone`, `pics`, `uid`,`time`,`detailsAddr`,`pos`) VALUES ('{$dDates['sname']}', '{$dDates['address']}', '{$dDates['type']}', '{$dDates['info']}', '{$dDates['uname']}', '{$dDates['phone']}','{$dDates['pics']}',{$uid},'{$time}','{$dDates['detailsAddr']}','{$dDates['position']}')";
     $db=$db->query($sql);
     echo $db;
   }

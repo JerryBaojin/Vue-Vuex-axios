@@ -5,12 +5,19 @@ import SelectPage from '@/components/SelectPage'
 import ShopDetails from '@/components/ShopDetails'
 import SignIn from '@/components/SignIn'
 import AdminTable from '@/components/AdminTable'
+import JsSdk from '@/components/JsSdk'
+import DetailsMap from '@/components/DetailsMap'
 
 Vue.use(Router)
 
 export default new Router({
-
+  // mode:"history",
   routes: [
+    {
+      path: '/DetailsMap/:id',
+      name: 'DetailsMap',
+      component: DetailsMap
+    },
     {
       path: '/',
       name: 'MainPage',

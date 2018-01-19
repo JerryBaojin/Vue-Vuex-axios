@@ -2,22 +2,71 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1.0">
-    <title>foods</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+
+    <title>大千美食节</title>
+    <script type="text/javascript" src="http://api.map.baidu.com/api?v=3.0&ak=0iSqkcbnioofoG2EuMsvb28V73qOGWul">
+    //v3.0版本的引用方式：src="http://api.map.baidu.com/api?v=3.0&ak=您的密钥"
+    </script>
+    <script type="text/javascript" src="http://api.map.baidu.com/library/RichMarker/1.2/src/RichMarker_min.js">
+    </script>
      <!-- <script type="text/javascript" src="http://api.map.baidu.com/api?v=3.0&ak=0iSqkcbnioofoG2EuMsvb28V73qOGWul"></script> -->
   </head>
   <body>
     <div id="app"></div>
     <!-- built files will be auto injected -->
   </body>
+  <script src="http://res.wx.qq.com/open/js/jweixin-1.2.0.js"></script>
+
   <style >
+
+  @charset "utf-8";
+/* CSS Document */
+*{margin:0;padding: 0}
+html,body{height:100%}
+
+.op div:nth-child(2) .el-input__inner{
+
+    width: 98% !important;
+
+}
+
+@media screen and (min-width: 380px) {
+.title{margin:0 auto;width:320px;padding:60px 0px 20px}
+.title img{width:100%;}
+.szq,.dxq,.zzx,.wyx,.lcs{width:120px; margin:30px auto 0px;}
+.szq img,.dxq img,.zzx img,.wyx img,.lcs img{width:100%; text-align: center;}
+.map{width:200px;margin:30px auto 30px}
+.map img{width:200px; text-align: center;}
+}
+
+@media screen and (max-width: 380px) {
+.title{margin:0 auto;width:80%;padding:40px 0px 10px}
+.title img{width:100%;}
+.szq,.dxq,.zzx,.wyx,.lcs{width:110px; margin:12px auto 0px;}
+.szq img,.dxq img,.zzx img,.wyx img,.lcs img{width:100%; text-align: center;}
+.map{width:180px;margin:20px auto 30px}
+.map img{width:100%; text-align: center;}
+}
+
+
+
+  input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button{
+    -webkit-appearance: none !important;
+    margin: 0;
+}
+  .el-message{
+    min-width: 320px;
+  width: 80% !important;
+  }
     #app{
       padding: 0px;
       margin: 0px auto;
       font-size: 14px;
       min-width: 320px;
       max-width: 640px;
-
       color: #333333;
       position: relative;
       -webkit-tap-highlight-color: rgba(0,0,0,0);
@@ -25,14 +74,18 @@
     body{
       background-color: #f0f2f5;
     }
+    .el-message-box{
+      width: unset !important;
+    }
     @media screen and (max-width: 400px)
     {
-      body{
-        background: black;
-      }
+
       .el-rate__icon{
-        font-size:  13px !important;
+        font-size:  5px !important;
       }
+    }
+.el-carousel__container{
+      height: 222px !important;
     }
   </style>
 

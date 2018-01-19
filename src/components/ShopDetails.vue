@@ -1,23 +1,22 @@
 <template>
   <div class="am-g">
-
-    <div class="banner">
-
+        <JsSdk ref="share"/>
+    <div class="uname">
+              {{dates.sname}}</h3>
+    </div>
+    <div class="banner" style="display:none;">
           <div class="block">
-
            <el-carousel height="240px" style="overflow:hidden;">
              <el-carousel-item v-for="item of dates.image" :key="item">
                <h3>    <img :src="item" class="am-img-responsive" alt="" /></h3>
              </el-carousel-item>
            </el-carousel>
          </div>
-
     </div>
-    <div class="col-sm-12" style="background:white;">
+    <div class="col-sm-12" style="background:white;margin-top:-23px;">
       <h1 class="am-text-center">{{dates.uname}}</h1>
-      <hr />
 
-      <div class="am-g stars">
+      <div class=" stars">
         <div class="left-box">
           <div class="am-u-sm-3 " style="padding:0;">综合评价</div>
           <div >
@@ -29,7 +28,7 @@
               text-color="#ff9900"
           >
             </el-rate>
-            热度{{dates.views}}
+            热度:{{dates.views}}
           </div>
         </div>
 
@@ -104,22 +103,30 @@
 
       <hr />
       <div class="am-margin-horizontal-lg details">
-        <h3>地址：<small>{{dates.address}}</small></h3>
-        <h3>电话：<small><a :href="'tel:'+dates.phone">{{dates.phone}}<span class="am-icon-angle-right am-margin-left-sm"></span></a></small></h3>
+
+        <h3>地址：<small><a style="font-size:16px;" href="javascript:void(0)" @click="toDetialsMap">{{dates.detailsAddr}}</a></small></h3>
+
+        <h3>电话：<small><a :href="'tel:'+dates.phone" >{{dates.phone}}<span class="am-icon-angle-right am-margin-left-sm"></span></a></small></h3>
         <h3>类型：<small>{{dates.type}}</small></h3>
         <h3>简介：
             <div class="tip am-margin-horizontal-lg">
               <p>{{dates.info}}</p>
             </div>
           </h3>
+          <h4 class="am-margin-horizontal-lg" v-if="ableToComments">点击评价：
+            <el-rate  @change="change"  :disabled="ableComments"  aria-valuenow="1" v-model="commentStar" ></el-rate>
+          </h4>
+        <div class="">
+          <div v-for="item of dates.image" :key="item">
+            <h3>    <img :src="item" class="am-img-responsive" alt="" /></h3>
+          </div>
+        </div>
       </div>
 
 
 
       <hr />
-      <h4 class="am-margin-horizontal-lg" v-if="ableToComments">点击评价：
-        <el-rate  @change="change"  :disabled="ableComments"  aria-valuenow="1" v-model="commentStar" ></el-rate>
-      </h4>
+
     </div>
     <div class="am-topbar-fixed-bottom am-margin-horizontal-sm am-margin-bottom-sm" style="display:none;">
       <button type="button" class="am-btn am-btn-warning am-btn-block">优惠券</button>
@@ -129,7 +136,11 @@
 </template>
 <script>
 import { Loading } from 'element-ui';
+import JsSdk from '../components/JsSdk'
   export default{
+    components:{
+      JsSdk
+    },
     name:"ShopDetails",
     data(){
       return {
@@ -138,7 +149,7 @@ import { Loading } from 'element-ui';
         star3:3,
         star2:2,
         star1:1,
-        commentStar:3.4,
+        commentStar:3,
         ableComments:false,
         nowStar:0,
         ableToComments:true,
@@ -148,12 +159,26 @@ import { Loading } from 'element-ui';
     computed:{
     },
     methods:{
+      toDetialsMap:function(){
+      let target=this.$route.params.id;
+      this.$router.push({path:"/DetailsMap/"+target})
+      },
       change:function(e){
-        let openid=localStorage.getItem("openid");
+        let openid=localStorage.getItem("openid")|| "null";
         let times=this.dates['uid'];
         let that=this;
+
+
         //localStorege
-        this.$confirm('确认评论吗？').then(()=>{
+      this.$confirm('确认评论吗？').then(()=>{
+
+                if(openid=='null'){
+                  location.href="http://weixin.scnjnews.com/foods/main.php?act=comment&pid="+that.$route.params.id;
+                  return false;
+                }
+
+
+
             this.$http.post("api/frontapi.php",{"act":"makeComments","openid":openid,"uid":times,"star":e}).then(res=>{
             switch (res.data.status) {
               case 304:
@@ -182,22 +207,30 @@ import { Loading } from 'element-ui';
       }
     },
     mounted:function(){
+
+
       let loadingInstance1 = Loading.service({ fullscreen: true });
       let that=this;
       let openid=localStorage.getItem("openid") || "null";
+
       this.$http.post("api/frontapi.php",{"act":"getOneDetails","uid":this.$route.params,"openid":openid}).then((res)=>{
-        if(res.data.tem==100){
-                  this.$message('请在微信端打开才能评价!');
+
+        if(res.data.hasOwnProperty("tem")){
+
+                //  this.$message('请在微信端登陆后才能评价!');
         }
         if(res.data.status==200){
           if(res.data.time==303){
               that.ableToComments=false;
           }
+          //设置title
+          document.title= res.data.msgBox[0].sname;
             if(res.data.msgBox[0].pics!=''){
                 res.data.msgBox[0].image=res.data.msgBox[0].pics.split(",");
             }else{
-                res.data.msgBox[0].image="../static/image/400.gif";
+                res.data.msgBox[0].image=["static/image/400.gif"];
             }
+
             for (let x=1;x<=5;x++){
               res.data.msgBox[0]["star"+x]=parseInt(res.data.msgBox[0]["star"+x]);
             }
@@ -211,10 +244,18 @@ import { Loading } from 'element-ui';
             this.$message('id错误!');
             this.$router.push({path:"/pickpage/"});
         }
-
-                      this.$nextTick(() => { // 以服务的方式调用的 Loading 需要异步关闭
+              this.$nextTick(() => { // 以服务的方式调用的 Loading 需要异步关闭
                         loadingInstance1.close();
                       });
+
+           let datesA={
+             "title":that.dates.sname,
+             "desc":"内江史上最全的美食地图,没有之一!",
+             "image":"http://weixin.scnjnews.com/foods/"+that.dates.image[0],
+             "link":"http://weixin.scnjnews.com/foods/#/shop/"+this.$route.params.id,
+           }
+          this.$refs.share.share(datesA);
+
       },(e)=>{
           this.$message('网络错误!');
       })
@@ -223,6 +264,16 @@ import { Loading } from 'element-ui';
   }
 </script>
 <style scoped>
+.uname{
+  text-align: center;
+  background: #00adff;
+    height: 60px;
+    line-height: 60px;
+    font-size: 20px;
+    font-weight: bold;
+    color: #fff;
+}
+
 .left-box{
   display: flex;
 flex-direction: column;
@@ -257,6 +308,7 @@ flex-direction: column;
   flex: 1;
 }
 .right-box span div:nth-child(1){
+  width: 50px;
   padding-right: 8%;
 }
 
@@ -271,7 +323,8 @@ input[type=file]{
   line-height: 14px;
 }
 .am-img-responsive{
-  width: 100%;
+
+  margin: 0 auto;
 height: 240px;
 }
 .details h3 {
@@ -300,5 +353,12 @@ margin: 20px 20px;
   font-size: 14px;
 color: #5e6d82;
 }
+@media screen and (min-width:640px){
+  .right-box span div:nth-child(1){
+    width: 72px !important;
+  }
+
+}
+
 
 </style>

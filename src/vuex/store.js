@@ -3,10 +3,15 @@ import Vuex from 'vuex'
 Vue.use(Vuex);
 const store=new Vuex.Store({
   state:{
+    part:'',
     page:null,
-    shopId:0
+    shopId:0,
+    jssdk:[]
   },
   mutations:{
+    newPart(state,msg){
+      state.part=msg
+    },
     newPage(state,msg){
       state.page=msg
     },

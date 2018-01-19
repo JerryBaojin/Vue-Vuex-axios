@@ -6,7 +6,8 @@ import router from './router'
 import ElementUi from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
 import "../static/css/amazeui.min.css"
-
+import VueJsonp from 'vue-jsonp'
+Vue.use(VueJsonp)
 
 import axios from 'axios'
 axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';

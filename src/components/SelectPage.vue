@@ -1,18 +1,20 @@
 <template>
 <el-container>
-  <el-header>
-    <el-input style="margin:0;" v-model="input" placeholder="请输入搜索内容" @keyup="search">
-       <el-button slot="append" icon="el-icon-search" @click.preventDefault="search"></el-button>
-     </el-input>
-  </el-header>
+  <JsSdk ref="share"/>
 
-  <el-carousel height="150px">
+
+  <el-carousel >
     <el-carousel-item v-for="item in items" :key="item">
       <h3 class="imagH3">
         <img class="loop" :src="item"  alt="">
       </h3>
     </el-carousel-item>
   </el-carousel>
+  <el-header>
+    <el-input style="margin:0;" v-model="input" placeholder="请输入店家名字进行搜索" @keyup="search">
+       <el-button slot="append" icon="el-icon-search" @click.preventDefault="search"></el-button>
+     </el-input>
+  </el-header>
 
 
 <!-- types-->
@@ -33,21 +35,19 @@
   </el-col>
 
   <el-col :span="6"><div class="grid-content bg-purple">
-    <img src="static/image/a3.png" @click="filter('小吃')" alt="">
+    <img src="static/image/a4.png" @click="filter('小吃')" alt="">
   <span>小吃</span>
 </div></el-col>
   <el-col :span="6"><div class="grid-content bg-purple-light">
-    <img src="static/image/a4.png" @click="filter('河鲜')" alt="">
+    <img src="static/image/a3.png" @click="filter('河鲜')" alt="">
     <span>河鲜</span>
   </div></el-col>
 </el-row>
 
 
-
-
     <el-main>
       <div class="op">
-        <el-select size="small" v-model="Foodvalue" placeholder="饮食分类">
+        <el-select style="display:none;" size="small" v-model="Foodvalue" placeholder="饮食分类">
           <el-option
             v-for="item in foodOption"
             :key="item.value"
@@ -58,6 +58,8 @@
 
         <el-select size="small" v-model="areaValue" placeholder="地域分类">
           <el-option
+
+          style="width:96%;"
             v-for="item in areaOption"
             :key="item.value"
             :label="item.label"
@@ -73,12 +75,16 @@
                 <img :src="o.image" alt="">
           </div>
           <div class="item-right">
-            <div>{{o.name}}</div>
+            <div>{{o.sname}}</div>
             <div class="block">
               <el-rate disabled aria-valuenow="4" v-model="itemsArray[index].star" ></el-rate>
             </div>
             <div class="area">
-              {{o.address}}
+              <div class="">
+                {{o.address}}
+
+              </div>
+
             </div>
             <div class="price">
               <span>{{o.type}}</span>
@@ -97,8 +103,12 @@
 </template>
 
 <script>
+import JsSdk from '../components/JsSdk'
 import { Loading } from 'element-ui';
   export default {
+    components:{
+      JsSdk
+    },
     name:"SelectPage",
     data() {
       return {
@@ -111,7 +121,7 @@ import { Loading } from 'element-ui';
         loaddingText:"没有更多了~",
         arriveBottom:true,
         star:1,
-        items:[ "https://ss1.bdstatic.com/70cFuXSh_Q1YnxGkpoWK1HF6hhy/it/u=2102900165,11904912&fm=200&gp=0.jpg"],
+        items:[ "static/images/1.jpg","static/images/2.jpg"],
         areaOption: [
           {
           value: '所有区域',
@@ -123,21 +133,16 @@ import { Loading } from 'element-ui';
         }, {
           value: '东兴区',
           label: '东兴区'
-        }, {
-          value: '高新区',
-          label: '高新区'
-        }, {
-          value: '经开区',
-          label: '经开区'
+        },
+        {
+            value: '隆昌市',
+            label: '隆昌市'
         }, {
           value: '资中县',
           label: '资中县'
         },{
           value: '威远县',
           label: '威远县'
-        },{
-            value: '隆昌市',
-            label: '隆昌市'
         }],
 
         foodOption:[
@@ -162,7 +167,8 @@ import { Loading } from 'element-ui';
       Foodvalue:'',
       areaValue:"",
         selectedOptions:[],
-        input: ''
+        input: '',
+        sTimes:false
       }
     },
     watch:{
@@ -199,6 +205,7 @@ import { Loading } from 'element-ui';
         let tg=false;
 
         if( x=='所有区域' && this.Foodvalue=="所有分类"){
+
           this.itemsArray=this.bakArray;
           return false;
         }
@@ -233,8 +240,9 @@ import { Loading } from 'element-ui';
 
         this.itemsArray=this.bakArray.filter((v)=>{
 
-          return Sreg.test(v.name);
+          return Sreg.test(v.sname);
         });
+
       },
       filter:function(value){
         this.itemsArray=this.selectPageArray.filter((v)=>{
@@ -256,24 +264,59 @@ import { Loading } from 'element-ui';
               that.arriveBottom=false;//不会再次请求数据
             }else{
               that.goodsBeginWith+=9;
+              for (let x=1;x<=5;x++){
+                res.data.msgBox[0]["star"+x]=parseInt(res.data.msgBox[0]["star"+x]);
+              }
               res.data.msgBox.map((value,index)=>{
                 if(value.pics!=''){
                     res.data.msgBox[index].image=value.pics.split(",")[0];
                 }else{
                     res.data.msgBox[index].image="static/image/400.gif";
                 }
-                res.data.msgBox[index].star=Math.round(value.star/value.views);
+                  res.data.msgBox[index].star=that.nowStar=(5*res.data.msgBox[0].star5+4*res.data.msgBox[0].star4+3*res.data.msgBox[0].star3+2*res.data.msgBox[0].star2+res.data.msgBox[0].star1)/parseInt(res.data.msgBox[0].views);
+
               })
+
+              that.selectPageArray=res.data.msgBox;
+
+              let store=this.$store.state.part;
+
               that.bakArray=that.bakArray.concat(res.data.msgBox);
-              that.itemsArray=that.itemsArray.concat(res.data.msgBox);
+
+              if(store!='' && !that.sTimes){
+                that.sTimes=true;
+                  that.areaValue=store;
+                  this.$store.commit("newPart","");
+                //地域筛选
+                  that.itemsArray=that.bakArray.filter((v)=>v.address.match(store)!=null);
+              }else{
+                  that.itemsArray=that.itemsArray.concat(res.data.msgBox);
+              }
+              //去重
+              that.itemsArray.map((v,k)=>{
+
+                that.itemsArray.map((v2,k2)=>{
+                  if(v.id==v2.id && k!=k2){
+                      that.itemsArray.splice(k,1);
+                  }
+                })
+              })
             }
 
             if(loadingInstance!=null){
               this.$nextTick(() => { // 以服务的方式调用的 Loading 需要异步关闭
                    loadingInstance.close();
                     that.itemsLoading=true;
+                      that.loaddingText="没有更多";
               });
             }
+            setTimeout(()=>{
+              this.$nextTick(() => { // 以服务的方式调用的 Loading 需要异步关闭
+                   loadingInstance.close();
+                    that.itemsLoading=true;
+                      that.loaddingText="没有更多";
+              });
+            },2000)
             that.underRequire=false;
           }
         },(e)=>{
@@ -289,6 +332,19 @@ import { Loading } from 'element-ui';
       }
     },
     mounted:function(){
+      // JSSDK
+      let datesA={
+        "title":"甜城味·内江美食地图",
+        "desc":"内江史上最全的美食地图,没有之一!",
+        "image":"http://weixin.scnjnews.com/foods/share.png",
+        "link":"http://weixin.scnjnews.com/foods/#/pickpage",
+      }
+      this.$refs.share.share(datesA);
+
+      //jssdk
+
+
+      document.title="大千美食节";
       this.getGoodS();
       let that=this;
       window.addEventListener("scroll",function(x){
@@ -299,6 +355,7 @@ import { Loading } from 'element-ui';
         //滑动到底部再次加载
         //不能频繁触发
         if(total<=domHeight+scorllHeight && that.arriveBottom && !that.underRequire){
+          that.loaddingText="loadding....";
           that.itemsLoading=false;
           that.underRequire=true;
           let loadingInstance = Loading.service({
@@ -319,9 +376,16 @@ import { Loading } from 'element-ui';
           }else{
               res.data.msgBox[index].image="static/image/400.gif";
           }
-          res.data.msgBox[index].star=Math.round(value.star/value.views);
+          for (let x=1;x<=5;x++){
+            res.data.msgBox[0]["star"+x]=parseInt(res.data.msgBox[0]["star"+x]);
+          }
+          res.data.msgBox[index].star=that.nowStar=(5*res.data.msgBox[0].star5+4*res.data.msgBox[0].star4+3*res.data.msgBox[0].star3+2*res.data.msgBox[0].star2+res.data.msgBox[0].star1)/parseInt(res.data.msgBox[0].views);
+
         })
-          that.selectPageArray=res.data.msgBox;
+
+        that.selectPageArray=res.data.msgBox;
+
+
       },(e)=>{
         console.log(e)
       })
@@ -330,14 +394,8 @@ import { Loading } from 'element-ui';
   }
 </script>
 <style scoped>
-.item-left{
-  height: 100px;
-  overflow: hidden;
-}
 
-.item-left img{
-  padding-top: 20%;
-}
+
 .rrw:hover {
   cursor: pointer;
 }
@@ -351,6 +409,10 @@ import { Loading } from 'element-ui';
 .op>div{
 
   flex: 1;
+}
+.op input{
+  width: 96% !important;
+margin: 0 auto !important;
 }
 .op .el-input input{
 
@@ -381,11 +443,12 @@ import { Loading } from 'element-ui';
 }
 
 .imagH3{
+  height: 100%;
   margin: 0;
 }
 .loop{
   width: 100%;
-  height: 150px;
+  height: 100%;
 }
 .item{
   display: flex;
@@ -394,16 +457,18 @@ import { Loading } from 'element-ui';
   position: relative;
 }
 .item img{
-  width: 80px;
+  height:80px;
+  width: 120px;
 }
 .area{
   position: absolute;
     left: 73%;
     top: 30%;
-    font-size: 17px;
+    font-size: 14px;
 }
 .item-right{
   text-align: left;
+  font-weight: bold;
   padding-left:17px;
 }
 .block{
@@ -435,4 +500,14 @@ line-height: 40px;
     flex:1;
       margin-left: 5px;
   }
+  .uname{
+    text-align: center;
+    background: #00adff;
+      height: 60px;
+      line-height: 60px;
+      font-size: 20px;
+      font-weight: bold;
+      color: #fff;
+  }
+
 </style>
