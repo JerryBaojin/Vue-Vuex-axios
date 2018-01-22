@@ -106,14 +106,14 @@
 
         <h3>地址：<small><a style="font-size:16px;" href="javascript:void(0)" @click="toDetialsMap">{{dates.detailsAddr}}</a></small></h3>
 
-        <h3>电话：<small><a :href="'tel:'+dates.phone" >{{dates.phone}}<span class="am-icon-angle-right am-margin-left-sm"></span></a></small></h3>
+        <h3>电话：<small><a :href="'tel:'+dates.phone" >{{dates.phone}}</a></small></h3>
         <h3>类型：<small>{{dates.type}}</small></h3>
         <h3>简介：
             <div class="tip am-margin-horizontal-lg">
               <p>{{dates.info}}</p>
             </div>
           </h3>
-          <h4 class="am-margin-horizontal-lg" v-if="ableToComments">点击评价：
+          <h4 class="am-margin-horizontal-lg  bigStar" v-if="ableToComments">点击评价：
             <el-rate  @change="change"  :disabled="ableComments"  aria-valuenow="1" v-model="commentStar" ></el-rate>
           </h4>
         <div class="">
@@ -183,7 +183,7 @@ import JsSdk from '../components/JsSdk'
             switch (res.data.status) {
               case 304:
                 //location.href="main.php";
-                  this.$message("未找到用户信息!");
+                    location.href="http://weixin.scnjnews.com/foods/main.php?act=comment&pid="+that.$route.params.id;
                 break;
                 case 303:
                     this.$message("之前已经评论过了!");
@@ -284,6 +284,7 @@ flex-direction: column;
 }
 .stars{
   display: flex;
+      padding-top: 10px;
 }
 .left-box{
   flex: 1;
@@ -320,7 +321,7 @@ input[type=file]{
 }
 .el-rate{
   height: 28px;
-  line-height: 14px;
+  line-height: 28px;
 }
 .am-img-responsive{
 

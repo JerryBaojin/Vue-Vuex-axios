@@ -28,7 +28,7 @@ html,body{height:100%}
 
 .op div:nth-child(2) .el-input__inner{
 
-    width: 98% !important;
+    width: 94% !important;
 
 }
 
@@ -77,16 +77,33 @@ input::-webkit-inner-spin-button{
     .el-message-box{
       width: unset !important;
     }
+    .op ..el-input__suffix{
+      right: 24px;
+    }
+
     @media screen and (max-width: 400px)
-    {
+      {
 
-      .el-rate__icon{
-        font-size:  5px !important;
+        .el-rate__icon{
+          font-size:  8px !important;
+  		width:10px;
+        }
+
       }
-    }
-.el-carousel__container{
-      height: 222px !important;
-    }
-  </style>
 
-</html>
+  .el-carousel__container{
+        height: 222px !important;
+      }
+  		  .bigStar .el-rate__icon{
+            font-size: 20px !important;
+			width:20px;
+      }</style><script type=text/javascript>
+  var u = navigator.userAgent;
+    var isiOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/); //ios终端
+  if(isiOS){
+    let t=document.getElementsByClassName("el-rate__icon");
+
+    for(let i=0;i<t.length;i++){
+      t[i].style.fontSize="16px";
+    }
+  }</script></html>

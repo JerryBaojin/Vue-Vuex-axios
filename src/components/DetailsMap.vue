@@ -133,7 +133,7 @@ import JsSdk from '../components/JsSdk'
     position: absolute;
     font-size: 13px;
     font-weight: bold;
-    top: 8px;
+    top: 7px;
     right: 12px;
     color: white;
   }

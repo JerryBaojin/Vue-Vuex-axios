@@ -22,7 +22,7 @@
 
         let infos=  res.data.signPackage;
           wx.config({
-            debug: true,
+            debug: false,
             appId: infos['appId'],
             timestamp: infos['timestamp'],
             nonceStr: infos['nonceStr'],

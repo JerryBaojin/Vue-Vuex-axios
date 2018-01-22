@@ -1,14 +1,14 @@
 <template id="">
   <el-form  :model="form"   ref="form"  label-width="100px">
-
-  <el-form-item label="商店名称"  prop="name" :rules="[
+<JsSdk ref="share"/>
+  <el-form-item label="商户名称"  prop="name" :rules="[
       { required: true, message: '商店名称不能为空'}
     ]"
     >
     <el-input v-model="form.name" class="short" name="sname"  type="text" :maxlength="20"></el-input>
   </el-form-item>
 
-  <el-form-item label="商铺位置"  prop="detailsAddr" :rules="[
+  <el-form-item label="商户位置"  prop="detailsAddr" :rules="[
       { required: true, message: '商铺位置不能为空'}
     ]"
     >
@@ -16,7 +16,7 @@
   </el-form-item>
 
 
-  <el-form-item label="商铺区域"  prop="address" :rules="[
+  <el-form-item label="所属区域"  prop="address" :rules="[
       { required: true, message: '商铺区域不能为空'}
     ]" required>
     <el-select v-model="form.address" name="address" placeholder="请选择商铺区域">
@@ -42,7 +42,9 @@
     </el-select>
   </el-form-item>
 
-  <el-form-item label="商铺简介">
+  <el-form-item label="商户简介" prop="type" :rules="[
+      { required: true, message: '商户简介'}
+    ]" required>
     <el-input type="textarea" class="short" name="info" v-model="form.desc"></el-input>
   </el-form-item>
 
@@ -91,7 +93,11 @@
 </template>
 
 <script>
-  export default {
+import JsSdk from '../components/JsSdk'
+  export default{
+    components:{
+      JsSdk
+    },
     name:"SignIn",
     data() {
       return {
@@ -213,6 +219,14 @@
     },
     mounted:function(){
       document.title="大千美食节"
+      let datesA={
+        "title":"大千美食节",
+        "desc":"内江史上最全的美食地图,没有之一!",
+      "image":"http://weixin.scnjnews.com/foods/share.png",
+        "link":"http://weixin.scnjnews.com/foods/#/SignIn"
+      }
+     this.$refs.share.share(datesA);
+
       let that=this;
 
       var map = new BMap.Map("map");
@@ -229,9 +243,46 @@
 
 
       map.centerAndZoom(point, 15);
-      var marker = new BMap.Marker(point);        // 创建标注
+
+      var html2 = `<div class="target" style="position: absolute; margin: 0pt; padding: 0pt; width: 160px; height: 26px; left: -10px; top: -35px; overflow: hidden;">
+                    <img id="hxnk.gif"  style="border:none;left:0px; top:0px; position:absolute;width:30px;height:28px;" src="static/img/3.png">
+				        </div>
+	`,
+      //
+      // marker = new BMapLib.RichMarker(html2,  point,{
+      //                                             "anchor" : new BMap.Size(15, 28),
+			// 									                          "enableDragging" : true,
+      //                                            });
+
+   //     myIcon = new BMap.Icon("static/img/1.png",new BMap.Size(23, 25), {
+   //     // 指定定位位置。
+   //     // 当标注显示在地图上时，其所指向的地理位置距离图标左上
+   //     // 角各偏移10像素和25像素。您可以看到在本例中该位置即是
+   //     // 图标中央下端的尖角位置。
+   //     anchor: new BMap.Size(10, 25),
+   //
+   //     // 设置图片偏移。
+   //     // 当您需要从一幅较大的图片中截取某部分作为标注图标时，您
+   //     // 需要指定大图的偏移位置，此做法与css sprites技术类似。
+   //
+   // });
+   //
+ marker = new BMap.Marker(point);        // 创建标注
+
+ var opts = {
+     width : 50,     // 信息窗口宽度
+     height: 5,     // 信息窗口高度
+     title : ""  // 信息窗口标题
+ }
+ var infoWindow = new BMap.InfoWindow("拖动此图标进行定位", opts);  // 创建信息窗口对象
+
+ map.openInfoWindow(infoWindow, point);
       map.addOverlay(marker);
       marker.enableDragging();
+      marker.addEventListener("click", function(e){
+      console.log(e);
+      })
+
       //初始化
       this.resPosition(marker.getPosition());
 
