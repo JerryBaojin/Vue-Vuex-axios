@@ -21,6 +21,9 @@
         this.$http.post("api/frontapi.php",{"act":"JSSDK"}).then(res=>{
 
         let infos=  res.data.signPackage;
+      if(!infos){
+        return false;
+      }
           wx.config({
             debug: false,
             appId: infos['appId'],

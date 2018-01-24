@@ -1,5 +1,8 @@
 <?php
 $dDates=(array)json_decode(file_get_contents("php://input"));
+if(!$dDates){
+$dDates=$_POST;
+}
 $db=new mysqli("192.168.20.104","root","102098hchab","weixin");
 $preparArray=array(
   "status"=>400
@@ -55,10 +58,14 @@ switch ($dDates['act']) {
     $preparArray["beginWith"]=$dDates['beginWith'];
     $preparArray["endIn"]=$endIn;
 
-    $dDates["type"]=="全部"?$dDates["type"]="*":null;
+
+    if( $dDates["type"]=="全部"){
+          $sql="select * from festival  where checked='1' limit {$dDates['beginWith']},{$endIn}";
+    }else{
+        $sql="select * from festival  where checked='1' and address='{$dDates["type"]}' limit {$dDates['beginWith']},{$endIn}";
+    }
 
 
-    $sql="select {$dDates["type"]} from festival  where checked='1' limit {$dDates['beginWith']},{$endIn}";
 
     $re=$db->query($sql);
     $tempArr=[];

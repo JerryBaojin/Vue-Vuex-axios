@@ -9,7 +9,7 @@ if(empty($dDates)){
     return false;
   }
   $dir=date("Y-m-d",time());
-  $pathTemp="static/upload/".$dir;
+  $pathTemp="../static/upload/".$dir;
   if(!file_exists($pathTemp)){
     mkdir($pathTemp,0777,true);
   }
@@ -17,11 +17,13 @@ if(empty($dDates)){
   $type=explode(".",$data['name'])[1];
   $name=(string) time().uniqid().".".$type;
 
+	$normal="static/upload/".$dir;
+
   $upAction=move_uploaded_file($data['tmp_name'],$pathTemp."/".$name);
   if($upAction){
     echo json_encode(array(
       "errorCode"=>1,
-      "path"=>$pathTemp."/".$name
+      "path"=>$normal."/".$name
     ));
   }else{
     echo json_encode(array(
@@ -41,11 +43,11 @@ if(empty($dDates)){
   $re=$db->query($iexists);
   $row=mysqli_fetch_array($re,MYSQLI_NUM);
   $time=date("Y-m-d H-i-s",time());
-
+$infos=json_encode($dDates['short'],JSON_UNESCAPED_UNICODE);
   if($row[0]=='1'){
     echo 0;
   }else{
-    $sql="INSERT INTO `festival` (`sname`, `address`, `type`, `info`, `name`, `phone`, `pics`, `uid`,`time`,`detailsAddr`,`pos`) VALUES ('{$dDates['sname']}', '{$dDates['address']}', '{$dDates['type']}', '{$dDates['info']}', '{$dDates['uname']}', '{$dDates['phone']}','{$dDates['pics']}',{$uid},'{$time}','{$dDates['detailsAddr']}','{$dDates['position']}')";
+    $sql="INSERT INTO `festival` (`sname`, `address`, `type`, `info`, `name`, `phone`, `pics`, `uid`,`time`,`detailsAddr`,`pos`,`shortInfos`) VALUES ('{$dDates['sname']}', '{$dDates['address']}', '{$dDates['type']}', '{$dDates['info']}', '{$dDates['uname']}', '{$dDates['phone']}','{$dDates['pics']}',{$uid},'{$time}','{$dDates['detailsAddr']}','{$dDates['position']}','{$infos}')";
     $db=$db->query($sql);
     echo $db;
   }

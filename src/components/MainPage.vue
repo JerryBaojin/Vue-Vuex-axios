@@ -35,7 +35,6 @@ export default {
     toMap:function(){
         this.$router.push({path:'/DetailsMap/all'});
         document.getElementsByTagName("body")[0].style.background="";
-
     }
   },
   mounted:function(){

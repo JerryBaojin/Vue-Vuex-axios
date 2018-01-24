@@ -56,9 +56,10 @@
           </el-option>
         </el-select>
 
+
+
         <el-select size="small" v-model="areaValue" placeholder="地域分类">
           <el-option
-
           style="width:96%;"
             v-for="item in areaOption"
             :key="item.value"
@@ -66,6 +67,16 @@
             :value="item.value">
           </el-option>
         </el-select>
+
+        <el-select  size="small" v-model="statsS" placeholder="星级排序">
+          <el-option
+            v-for="item in starsSorts"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value">
+          </el-option>
+        </el-select>
+
       </div>
       <el-card class="box-card" style="border-top:0;" v-show="itemsArray.length!=0">
 
@@ -122,6 +133,18 @@ import { Loading } from 'element-ui';
         arriveBottom:true,
         star:1,
         items:[ "static/images/1.jpg","static/images/2.jpg"],
+        starsSorts:[
+          {
+            value:"esc",
+            label:"升序"
+          },
+          {
+            value:"desc",
+            label:"倒序"
+          }
+        ],
+        statsS:'',
+
         areaOption: [
           {
           value: '所有区域',
@@ -172,7 +195,24 @@ import { Loading } from 'element-ui';
       }
     },
     watch:{
+      statsS:function(v){
+          if(v=="desc"){
+            this.itemsArray.sort(function(a,b){
+                //return a.star-b.star;
+                return parseInt(b.star)-parseInt(a.star);//降序
+              });
+              console.log(  this.itemsArray)
+          }else{
+            this.itemsArray.sort(function(a,b){
+                //return a.star-b.star;
+                return parseInt(a.star)-parseInt(b.star);//降序
+              });
+                console.log(  this.itemsArray)
+          }
+
+      },
       Foodvalue:function(x){
+
         if( this.areaValue=='所有区域' && x=="所有分类"){
             this.itemsArray=this.bakArray;
             return false;
@@ -200,7 +240,7 @@ import { Loading } from 'element-ui';
         }
       },
       areaValue:function(x){
-
+      console.log(this.selectPageArray);
         let that=this;
         let tg=false;
 
@@ -252,6 +292,15 @@ import { Loading } from 'element-ui';
       getGoodS:function(loadingInstance=null,type=null){
         let that=this;
         type==null?type="全部":null;
+        let store=this.$store.state.part;
+
+          if(store!='' && !that.sTimes){
+            that.sTimes=true;
+              that.areaValue=store;
+              type=store;
+              this.$store.commit("newPart","");
+            //地域筛选
+          }
         let dates={
           "act":"getGoods",
           "type":type,
@@ -273,25 +322,18 @@ import { Loading } from 'element-ui';
                 }else{
                     res.data.msgBox[index].image="static/image/400.gif";
                 }
-                  res.data.msgBox[index].star=that.nowStar=(5*res.data.msgBox[0].star5+4*res.data.msgBox[0].star4+3*res.data.msgBox[0].star3+2*res.data.msgBox[0].star2+res.data.msgBox[0].star1)/parseInt(res.data.msgBox[0].views);
-
+                if(parseInt(res.data.msgBox[index].views)==0){
+                  res.data.msgBox[index].star=0
+                }else{
+                  res.data.msgBox[index].star=that.nowStar=(5*res.data.msgBox[index].star5+4*res.data.msgBox[index].star4+3*res.data.msgBox[index].star3+2*res.data.msgBox[index].star2+res.data.msgBox[index].star1)/parseInt(res.data.msgBox[index].views);
+                }
               })
-
-              that.selectPageArray=res.data.msgBox;
 
               let store=this.$store.state.part;
 
               that.bakArray=that.bakArray.concat(res.data.msgBox);
+              that.itemsArray=that.itemsArray.concat(res.data.msgBox);
 
-              if(store!='' && !that.sTimes){
-                that.sTimes=true;
-                  that.areaValue=store;
-                  this.$store.commit("newPart","");
-                //地域筛选
-                  that.itemsArray=that.bakArray.filter((v)=>v.address.match(store)!=null);
-              }else{
-                  that.itemsArray=that.itemsArray.concat(res.data.msgBox);
-              }
               //去重
               that.itemsArray.map((v,k)=>{
 
@@ -311,11 +353,13 @@ import { Loading } from 'element-ui';
               });
             }
             setTimeout(()=>{
-              this.$nextTick(() => { // 以服务的方式调用的 Loading 需要异步关闭
-                   loadingInstance.close();
-                    that.itemsLoading=true;
-                      that.loaddingText="没有更多";
-              });
+              if(loadingInstance!=null){
+                this.$nextTick(() => { // 以服务的方式调用的 Loading 需要异步关闭
+                     loadingInstance.close();
+                      that.itemsLoading=true;
+                        that.loaddingText="没有更多";
+                });
+              }
             },2000)
             that.underRequire=false;
           }
@@ -332,6 +376,7 @@ import { Loading } from 'element-ui';
       }
     },
     mounted:function(){
+
       // JSSDK
       let datesA={
         "title":"甜城味·内江美食地图",
@@ -340,10 +385,7 @@ import { Loading } from 'element-ui';
         "link":"http://weixin.scnjnews.com/foods/#/pickpage",
       }
       this.$refs.share.share(datesA);
-
       //jssdk
-
-
       document.title="大千美食节";
       this.getGoodS();
       let that=this;
@@ -361,7 +403,12 @@ import { Loading } from 'element-ui';
           let loadingInstance = Loading.service({
             target:"#Iloading"
           });
-          that.getGoodS(loadingInstance);
+          if(that.areaValue!="所有区域"){
+              that.getGoodS(loadingInstance,that.areaValue);
+          }else{
+              that.getGoodS(loadingInstance);
+          }
+
         }
       })
 
@@ -370,21 +417,23 @@ import { Loading } from 'element-ui';
         "act":"getAll"
       }
       this.$http.post("api/frontapi.php",dates).then(res=>{
+        for (let x=1;x<=5;x++){
+          res.data.msgBox[0]["star"+x]=parseInt(res.data.msgBox[0]["star"+x]);
+        }
         res.data.msgBox.map((value,index)=>{
           if(value.pics!=''){
               res.data.msgBox[index].image=value.pics.split(",")[0];
           }else{
               res.data.msgBox[index].image="static/image/400.gif";
           }
-          for (let x=1;x<=5;x++){
-            res.data.msgBox[0]["star"+x]=parseInt(res.data.msgBox[0]["star"+x]);
+          if(parseInt(res.data.msgBox[index].views)==0){
+            res.data.msgBox[index].star=0
+          }else{
+            res.data.msgBox[index].star=that.nowStar=(5*res.data.msgBox[index].star5+4*res.data.msgBox[index].star4+3*res.data.msgBox[index].star3+2*res.data.msgBox[index].star2+res.data.msgBox[index].star1)/parseInt(res.data.msgBox[index].views);
           }
-          res.data.msgBox[index].star=that.nowStar=(5*res.data.msgBox[0].star5+4*res.data.msgBox[0].star4+3*res.data.msgBox[0].star3+2*res.data.msgBox[0].star2+res.data.msgBox[0].star1)/parseInt(res.data.msgBox[0].views);
-
         })
 
         that.selectPageArray=res.data.msgBox;
-
 
       },(e)=>{
         console.log(e)

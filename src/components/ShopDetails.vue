@@ -117,8 +117,12 @@
             <el-rate  @change="change"  :disabled="ableComments"  aria-valuenow="1" v-model="commentStar" ></el-rate>
           </h4>
         <div class="">
-          <div v-for="item of dates.image" :key="item">
-            <h3>    <img :src="item" class="am-img-responsive" alt="" /></h3>
+          <div v-for="(item,index) of dates.image" :key="item">
+            <h3>    <img :src="item" style="width:80%;" class="am-img-responsive" alt="" />
+              <div class="inShort">
+                {{dates.shortInfos[index]}}
+              </div>
+            </h3>
           </div>
         </div>
       </div>
@@ -214,8 +218,7 @@ import JsSdk from '../components/JsSdk'
       let openid=localStorage.getItem("openid") || "null";
 
       this.$http.post("api/frontapi.php",{"act":"getOneDetails","uid":this.$route.params,"openid":openid}).then((res)=>{
-
-        if(res.data.hasOwnProperty("tem")){
+        console.log(res.data);  if(res.data.hasOwnProperty("tem")){
 
                 //  this.$message('请在微信端登陆后才能评价!');
         }
@@ -223,6 +226,8 @@ import JsSdk from '../components/JsSdk'
           if(res.data.time==303){
               that.ableToComments=false;
           }
+          res.data.msgBox[0].shortInfos=JSON.parse(res.data.msgBox[0].shortInfos);
+
           //设置title
           document.title= res.data.msgBox[0].sname;
             if(res.data.msgBox[0].pics!=''){
@@ -264,6 +269,9 @@ import JsSdk from '../components/JsSdk'
   }
 </script>
 <style scoped>
+.inShort {
+  text-indent: 20px;
+}
 .uname{
   text-align: center;
   background: #00adff;

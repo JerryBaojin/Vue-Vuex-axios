@@ -47,7 +47,9 @@
     ]" required>
     <el-input type="textarea" class="short" name="info" v-model="form.desc"></el-input>
   </el-form-item>
-
+<div style="color:red;text-align:center;">
+  请拖动下方的红色图标进行定位
+</div>
   <el-form-item label="地理位置">
     <div id="map" style="height:200px;max-width:320px;">
     </div>
@@ -83,7 +85,8 @@
   :before-upload="beforeUpload"
   list-type="picture">
   <el-button size="small" type="primary">点击选择上传图片</el-button>
-  <div slot="tip" class="el-upload__tip">只能上传jpg/png文件,不能超过10张</div>
+  <div slot="tip" class="el-upload__tip">只能上传jpg/png文件,不能超过40张</div>
+
   </el-upload>
 
   <el-form-item>
@@ -101,6 +104,7 @@ import JsSdk from '../components/JsSdk'
     name:"SignIn",
     data() {
       return {
+        inputTag:0,//init input index
         position:{
             "p":{
               'lat':0,
@@ -124,7 +128,7 @@ import JsSdk from '../components/JsSdk'
       },
     methods: {
       handleExceed:function(res){
-        this.$message('最多只能上传10张图片!');
+        this.$message('最多只能上传40张图片!');
       },
       beforeUpload:function(file){
       // file.size/1000000>=2
@@ -138,6 +142,20 @@ import JsSdk from '../components/JsSdk'
       },
       handleSuccess:function(res,file,list){
         this.pics=list;
+        let index=this.inputTag
+
+// .getElementsByTagName("li")[index]
+          let tag=document.getElementsByClassName('upload')[0].getElementsByTagName("ul")[0];
+
+          let input=document.createElement("textarea");
+          input.name="short[]";
+
+          input.className="el-textarea__inner inoutTextarea";
+          input.placeholder="请输入图片的简介"
+
+          tag.appendChild(input);
+
+          this.inputTag++;
       },
       handlePreview:function(res){
 
@@ -164,7 +182,7 @@ import JsSdk from '../components/JsSdk'
       },
       onSubmit(formName) {
 
-        this.$confirm("目前暂不支持修改数据,请确认无误后提交!").then(()=>{
+        this.$confirm("目前暂不支持修改数据,请确认无误后提交!点击\"确定\"继续提交,点击\"取消\"重新修改").then(()=>{
           if(!this.isDraggled){
             this.$message("请拖动地图，定位自己的位置!");
             return false;
@@ -218,6 +236,9 @@ import JsSdk from '../components/JsSdk'
 
     },
     mounted:function(){
+
+
+
       document.title="大千美食节"
       let datesA={
         "title":"大千美食节",
@@ -248,44 +269,14 @@ import JsSdk from '../components/JsSdk'
                     <img id="hxnk.gif"  style="border:none;left:0px; top:0px; position:absolute;width:30px;height:28px;" src="static/img/3.png">
 				        </div>
 	`,
-      //
-      // marker = new BMapLib.RichMarker(html2,  point,{
-      //                                             "anchor" : new BMap.Size(15, 28),
-			// 									                          "enableDragging" : true,
-      //                                            });
 
-   //     myIcon = new BMap.Icon("static/img/1.png",new BMap.Size(23, 25), {
-   //     // 指定定位位置。
-   //     // 当标注显示在地图上时，其所指向的地理位置距离图标左上
-   //     // 角各偏移10像素和25像素。您可以看到在本例中该位置即是
-   //     // 图标中央下端的尖角位置。
-   //     anchor: new BMap.Size(10, 25),
-   //
-   //     // 设置图片偏移。
-   //     // 当您需要从一幅较大的图片中截取某部分作为标注图标时，您
-   //     // 需要指定大图的偏移位置，此做法与css sprites技术类似。
-   //
-   // });
-   //
  marker = new BMap.Marker(point);        // 创建标注
 
- var opts = {
-     width : 50,     // 信息窗口宽度
-     height: 5,     // 信息窗口高度
-     title : ""  // 信息窗口标题
- }
- var infoWindow = new BMap.InfoWindow("拖动此图标进行定位", opts);  // 创建信息窗口对象
 
- map.openInfoWindow(infoWindow, point);
       map.addOverlay(marker);
       marker.enableDragging();
-      marker.addEventListener("click", function(e){
-      console.log(e);
-      })
-
       //初始化
       this.resPosition(marker.getPosition());
-
       marker.addEventListener("dragend", function(e){
         that.isDraggled=true
         that.resPosition(e.point);
@@ -295,6 +286,9 @@ import JsSdk from '../components/JsSdk'
   }
 </script>
 <style scoped>
+.inoutTextarea{
+  padding: 20px ;
+}
 .el-upload__input{
   display: none !important;
 }

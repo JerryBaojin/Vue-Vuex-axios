@@ -49,7 +49,15 @@ import JsSdk from '../components/JsSdk'
 
           var map = new BMap.Map("map");
           // 创建地图实例
-          var point = new BMap.Point(105.06648486343,29.593761858443);
+          if(this.$route.params.id=='all'){
+              var point = new BMap.Point(105.06648486343,29.593761858443);
+          }else{
+              let p=JSON.parse(ponits[0].pos).p;
+              var point = new BMap.Point(p.lng,p.lat);
+          }
+
+
+
           map.addControl(new BMap.NavigationControl());
           // 创建点坐标
           map.centerAndZoom(point, 15);
