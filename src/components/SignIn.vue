@@ -181,7 +181,10 @@ import JsSdk from '../components/JsSdk'
         })
       },
       onSubmit(formName) {
-
+        if(this.pics<=2){
+          alert("至少上传3张图片!");
+          return false;
+        }
         this.$confirm("目前暂不支持修改数据,请确认无误后提交!点击\"确定\"继续提交,点击\"取消\"重新修改").then(()=>{
           if(!this.isDraggled){
             this.$message("请拖动地图，定位自己的位置!");
@@ -191,17 +194,18 @@ import JsSdk from '../components/JsSdk'
           this.pics.map((v)=>{
             pics.push(v.response.path);
           })
+
+
           let formDates=new FormData(document.getElementsByTagName("form")[0]);
           formDates.append("pics",pics)
           formDates.append("act","getAll")
-
           formDates.append("position",JSON.stringify(this.position));
           this.$refs[formName].validate((valid) => {
             if (valid) {
               this.$http.post("api/api.php",formDates).then(res=>{
 
                 if(  res.data==1){
-                  this.$message('录入成功!待审核成功后，方可在首页展示！请勿重复提交！')
+                  alert('录入成功!待审核成功后，方可在首页展示！请勿重复提交！')
                 }else if(res.data==0){
                   this.$message('已经报过名了!');
                 }
@@ -236,9 +240,6 @@ import JsSdk from '../components/JsSdk'
 
     },
     mounted:function(){
-
-
-
       document.title="大千美食节"
       let datesA={
         "title":"大千美食节",

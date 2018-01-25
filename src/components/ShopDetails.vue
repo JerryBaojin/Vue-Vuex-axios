@@ -218,7 +218,7 @@ import JsSdk from '../components/JsSdk'
       let openid=localStorage.getItem("openid") || "null";
 
       this.$http.post("api/frontapi.php",{"act":"getOneDetails","uid":this.$route.params,"openid":openid}).then((res)=>{
-        console.log(res.data);  if(res.data.hasOwnProperty("tem")){
+    if(res.data.hasOwnProperty("tem")){
 
                 //  this.$message('请在微信端登陆后才能评价!');
         }

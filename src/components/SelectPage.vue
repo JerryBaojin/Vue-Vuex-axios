@@ -240,7 +240,6 @@ import { Loading } from 'element-ui';
         }
       },
       areaValue:function(x){
-      console.log(this.selectPageArray);
         let that=this;
         let tg=false;
 
