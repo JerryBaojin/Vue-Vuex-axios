@@ -385,7 +385,7 @@ import { Loading } from 'element-ui';
       }
       this.$refs.share.share(datesA);
       //jssdk
-      document.title="大千美食节";
+      document.title="甜城美食地图";
       this.getGoodS();
       let that=this;
       window.addEventListener("scroll",function(x){

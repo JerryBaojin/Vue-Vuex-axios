@@ -240,7 +240,7 @@ import JsSdk from '../components/JsSdk'
 
     },
     mounted:function(){
-      document.title="大千美食节"
+      document.title="甜城美食地图"
       let datesA={
         "title":"大千美食节",
         "desc":"内江史上最全的美食地图,没有之一!",
