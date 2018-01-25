@@ -175,14 +175,10 @@ import JsSdk from '../components/JsSdk'
 
         //localStorege
       this.$confirm('确认评论吗？').then(()=>{
-
                 if(openid=='null'){
                   location.href="http://weixin.scnjnews.com/foods/main.php?act=comment&pid="+that.$route.params.id;
                   return false;
                 }
-
-
-
             this.$http.post("api/frontapi.php",{"act":"makeComments","openid":openid,"uid":times,"star":e}).then(res=>{
             switch (res.data.status) {
               case 304:
@@ -211,23 +207,14 @@ import JsSdk from '../components/JsSdk'
       }
     },
     mounted:function(){
-
-
       let loadingInstance1 = Loading.service({ fullscreen: true });
       let that=this;
       let openid=localStorage.getItem("openid") || "null";
-
       this.$http.post("api/frontapi.php",{"act":"getOneDetails","uid":this.$route.params,"openid":openid}).then((res)=>{
-    if(res.data.hasOwnProperty("tem")){
-
-                //  this.$message('请在微信端登陆后才能评价!');
-        }
         if(res.data.status==200){
           if(res.data.time==303){
               that.ableToComments=false;
           }
-          res.data.msgBox[0].shortInfos=JSON.parse(res.data.msgBox[0].shortInfos);
-
           //设置title
           document.title= res.data.msgBox[0].sname;
             if(res.data.msgBox[0].pics!=''){
@@ -235,15 +222,32 @@ import JsSdk from '../components/JsSdk'
             }else{
                 res.data.msgBox[0].image=["static/image/400.gif"];
             }
-
+            if(res.data.msgBox[0].shortInfos=='null'){
+              let emo=[];
+              for(let i=0;i<res.data.msgBox[0].image.length;i++){
+                emo[i]=' ';
+              }
+              res.data.msgBox[0].shortInfos=emo;
+            }else{
+                res.data.msgBox[0].shortInfos=JSON.parse(res.data.msgBox[0].shortInfos);
+            }
             for (let x=1;x<=5;x++){
               res.data.msgBox[0]["star"+x]=parseInt(res.data.msgBox[0]["star"+x]);
             }
             if(res.data.msgBox[0].views!='0'){
                 that.nowStar=(5*res.data.msgBox[0].star5+4*res.data.msgBox[0].star4+3*res.data.msgBox[0].star3+2*res.data.msgBox[0].star2+res.data.msgBox[0].star1)/parseInt(res.data.msgBox[0].views);
             }
-            that.dates=res.data.msgBox[0];
 
+
+           that.dates=res.data.msgBox[0];
+
+         var datesA={
+           "title":that.dates.sname,
+           "desc":"内江史上最全的美食地图,没有之一!",
+           "image":"http://weixin.scnjnews.com/foods/"+that.dates.image[0],
+           "link":"http://weixin.scnjnews.com/foods/#/shop/"+this.$route.params.id
+         }
+        this.$refs.share.share(datesA);
         }
         else{
             this.$message('id错误!');
@@ -253,13 +257,6 @@ import JsSdk from '../components/JsSdk'
                         loadingInstance1.close();
                       });
 
-           let datesA={
-             "title":that.dates.sname,
-             "desc":"内江史上最全的美食地图,没有之一!",
-             "image":"http://weixin.scnjnews.com/foods/"+that.dates.image[0],
-             "link":"http://weixin.scnjnews.com/foods/#/shop/"+this.$route.params.id,
-           }
-          this.$refs.share.share(datesA);
 
       },(e)=>{
           this.$message('网络错误!');

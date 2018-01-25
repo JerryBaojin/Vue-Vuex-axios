@@ -181,7 +181,8 @@ import JsSdk from '../components/JsSdk'
         })
       },
       onSubmit(formName) {
-        if(this.pics<=2){
+        
+        if(this.pics.length<=2){
           alert("至少上传3张图片!");
           return false;
         }

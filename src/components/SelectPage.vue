@@ -277,8 +277,7 @@ import { Loading } from 'element-ui';
         //serach by uname
         let  Sreg=new RegExp(this.input,'g');
 
-        this.itemsArray=this.bakArray.filter((v)=>{
-
+        this.itemsArray=this.selectPageArray.filter((v)=>{
           return Sreg.test(v.sname);
         });
 
