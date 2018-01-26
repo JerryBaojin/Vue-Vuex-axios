@@ -181,9 +181,9 @@ import JsSdk from '../components/JsSdk'
         })
       },
       onSubmit(formName) {
-        
+
         if(this.pics.length<=2){
-          alert("至少上传3张图片!");
+          alert("请至少上传3张图片");
           return false;
         }
         this.$confirm("目前暂不支持修改数据,请确认无误后提交!点击\"确定\"继续提交,点击\"取消\"重新修改").then(()=>{
@@ -206,7 +206,8 @@ import JsSdk from '../components/JsSdk'
               this.$http.post("api/api.php",formDates).then(res=>{
 
                 if(  res.data==1){
-                  alert('录入成功!待审核成功后，方可在首页展示！请勿重复提交！')
+                  alert('录入成功!待审核成功后，方可在首页展示！请勿重复提交！');
+                  this.$router.push({path:"/"});
                 }else if(res.data==0){
                   this.$message('已经报过名了!');
                 }

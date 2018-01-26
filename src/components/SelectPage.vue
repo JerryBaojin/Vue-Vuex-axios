@@ -91,9 +91,8 @@
               <el-rate disabled aria-valuenow="4" v-model="itemsArray[index].star" ></el-rate>
             </div>
             <div class="area">
-              <div class="">
+              <div style="width:50px;">
                 {{o.address}}
-
               </div>
 
             </div>
@@ -109,7 +108,15 @@
           {{loaddingText}}
       </div>
     </el-main>
+<div class="returnMap">
+  <router-link to="/DetailsMap/all">
+<img class="imap" src="static/img/map.png" alt="">
+<div class="">
+  打开地图
+</div>
 
+</router-link>
+</div>
 </el-container>
 </template>
 
@@ -280,7 +287,7 @@ import { Loading } from 'element-ui';
         this.itemsArray=this.selectPageArray.filter((v)=>{
           return Sreg.test(v.sname);
         });
-
+        console.log(this.itemsArray);
       },
       filter:function(value){
         this.itemsArray=this.selectPageArray.filter((v)=>{
@@ -442,7 +449,11 @@ import { Loading } from 'element-ui';
 </script>
 <style scoped>
 
+.img{
 
+margin: 0 auto;
+
+}
 .rrw:hover {
   cursor: pointer;
 }
@@ -534,6 +545,13 @@ line-height: 40px;
 #Iloading div div div{
   margin-top: -35px !important;
 }
+.returnMap{
+  position: fixed;
+  bottom: 20px;
+  font-size: 16px;
+  color: #2368c1;
+  left: 77%;
+}
   header{
     margin: 0 0 5px;
     display: flex;
@@ -547,6 +565,7 @@ line-height: 40px;
     flex:1;
       margin-left: 5px;
   }
+
   .uname{
     text-align: center;
     background: #00adff;
@@ -556,5 +575,9 @@ line-height: 40px;
       font-weight: bold;
       color: #fff;
   }
-
+  .imap{
+    width: 40px;
+margin: 0 auto;
+display: block;
+  }
 </style>

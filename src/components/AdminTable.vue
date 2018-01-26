@@ -1,7 +1,14 @@
 <template>
   <div class="">
 
-
+    <header style="textIndent: 20px;fontSize: 27px;">
+      市中区报名人数:{{counts.a}},
+      东兴区报名人数:{{counts.b}},
+      隆昌市报名人数:{{counts.c}},
+      资中县报名人数:{{counts.d}},
+      威远县报名人数:{{counts.e}},
+      总计报名人数:{{counts.a+counts.b+counts.c+counts.d+counts.e}}
+    </header>
   <el-table
     ref="multipleTable"
     :data="sqlDates"
@@ -9,32 +16,11 @@
     style="width: 100%"
     @selection-change="handleSelectionChange">
     <el-table-column
+    style="display:none;"
       type="selection"
       width="55">
     </el-table-column>
-    <el-table-column
-      label="id"
-      width="40">
-      <template slot-scope="scope">{{ scope.row.id }}</template>
-    </el-table-column>
-    <el-table-column
-      label="日期"
-      width="100">
-      <template slot-scope="scope">{{ scope.row.time }}</template>
-    </el-table-column>
-    <el-table-column
-      label="姓名"
-      width="120">
-      <template slot-scope="scope">{{ scope.row.name }}</template>
-    </el-table-column>
-    <el-table-column
-      label="评价"
-      width="320">
-      <template slot-scope="scope">
-        五星: {{ scope.row.star5 }},四星: {{ scope.row.star4}},三星: {{ scope.row.star3 }},二星: {{ scope.row.star2}},一星: {{ scope.row.star1}}
 
-      </template>
-    </el-table-column>
     <el-table-column
       label="地址"
       width="120">
@@ -42,7 +28,7 @@
     </el-table-column>
     <el-table-column
       label="详细地址"
-      width="120">
+      width="200">
       <template slot-scope="scope">{{ scope.row.detailsAddr }}</template>
     </el-table-column>
     <el-table-column
@@ -52,17 +38,17 @@
     </el-table-column>
     <el-table-column
       label="简介"
-      width="120">
+      width="500">
       <template slot-scope="scope">{{ scope.row.info }}</template>
     </el-table-column>
     <el-table-column
       label="店名"
-      width="60">
+      width="200">
       <template slot-scope="scope">{{ scope.row.sname }}</template>
     </el-table-column>
     <el-table-column
       label="手机号"
-      width="80">
+      width="110">
       <template slot-scope="scope">{{ scope.row.phone }}</template>
     </el-table-column>
 
@@ -77,17 +63,32 @@
     </el-table-column>
 
 
-    <el-table-column label="操作">
+    <el-table-column label="审核">
      <template slot-scope="scope">
-
          <el-button
            size="mini"
            :type="scope.row.checked=='0'?'danger':'success'"
-           @click="handleDelete(scope.row.id,scope.$index)">通过</el-button>
-
-
+           @click="handleDelete(scope.row.id,scope.$index)">{{scope.row.checked=='0'?'点击通过':'已经通过'}}
+         </el-button>
+         <el-button
+           size="mini"
+           type="danger"
+           @click="handleDeleteDetails(scope.row.id,scope.$index)">
+           点击删除
+         </el-button>
      </template>
    </el-table-column>
+
+   <el-table-column label="删除">
+    <template slot-scope="scope">
+        <el-button
+          size="mini"
+          type="danger"
+          @click="handleDeleteDetails(scope.row.id,scope.$index)">
+          点击删除
+        </el-button>
+    </template>
+  </el-table-column>
 
  </el-table>
   </el-table>
@@ -103,13 +104,32 @@
     name:"AdminTable",
     data() {
       return {
-
         multipleSelection: [],
-        sqlDates:[]
+        sqlDates:[],
+        counts:{"a":0,"b":0,"c":0,"d":0,"e":0}
       }
     },
 
     methods: {
+      handleDeleteDetails(v,i){
+        let that=this;
+        this.$confirm("确认删除吗?").then((res)=>{
+          this.$http.post("api/frontapi.php",{
+            "id":v,
+            "act":"DeleteDetails"
+          }).then((res)=>{
+            if(res.data.status==200){
+                that.sqlDates.splice(i,1);
+            }else{
+              this.$message("网络错误!");
+            }
+          },e=>{
+            console.log(e)
+          })
+        },e=>{
+          console.log(e);
+        })
+      },
       handleDelete(v,i){
         let that=this;
           this.$confirm('确认通过吗？').then(()=>{
@@ -145,9 +165,10 @@
         this.multipleSelection = val;
       }
     },mounted:function(){
-
-        if(prompt("token")=="colo"){
+        let token=localStorage.getItem("Item");
+        if(token || prompt("token")=="colo"){
           document.getElementById("app").style.maxWidth="100%";
+          localStorage.setItem("Item","colo");
           let that=this;
           let dates={
             "act":"getUnsign"
@@ -155,6 +176,27 @@
 
           this.$http.post("api/frontapi.php",dates).then(res=>{
             res.data.msgBox.map((value,index)=>{
+
+              switch (value.address) {
+                case "市中区":
+                that.counts.a++;
+                  break;
+                  case "东兴区":
+                  that.counts.b++;
+                    break;
+                    case "隆昌市":
+                    that.counts.c++;
+                      break;
+                      case "资中县":
+                      that.counts.d++;
+                        break;
+                        case "威远县":
+                        that.counts.e++;
+                          break;
+                default:
+              }
+
+
               if(value.pics!=''){
                   res.data.msgBox[index].image=value.pics.split(",");
               }else{
@@ -163,7 +205,8 @@
               res.data.msgBox[index].star=Math.round(value.star/value.views);
             })
               that.sqlDates=res.data.msgBox;
-              console.log(that.sqlDates);
+              //统计人数
+          console.log(that.counts)
           },(e)=>{
             console.log(e)
           })

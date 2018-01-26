@@ -20,8 +20,9 @@ switch ($dDates['act']) {
    return false;
 
     break;
-  case 'PassChecked':
-    $sql="UPDATE  festival set `checked`='1' where id='{$dDates['id']}'";
+  case 'DeleteDetails':
+
+    $sql="DELETE from  festival where id='{$dDates['id']}'";
     $re=$db->query($sql);
     if($re){
         $preparArray["status"]=200;
@@ -29,6 +30,16 @@ switch ($dDates['act']) {
         $preparArray["status"]=400;
     }
     break;
+
+    case 'PassChecked':
+      $sql="UPDATE  festival set `checked`='1' where id='{$dDates['id']}'";
+      $re=$db->query($sql);
+      if($re){
+          $preparArray["status"]=200;
+      }else{
+          $preparArray["status"]=400;
+      }
+      break;
 
   case 'getUnsign':
     $sql="select * from festival order by id desc";
