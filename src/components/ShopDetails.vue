@@ -30,6 +30,7 @@
             </el-rate>
             热度:{{dates.views}}
           </div>
+
         </div>
 
         <div class="right-box">
@@ -99,9 +100,11 @@
         </div>
 
       </div>
+      <h4 class="am-margin-horizontal-lg  details s" v-if="ableToComments">点击评价：
+        <el-rate class="sContainer"  @change="change"  :disabled="ableComments"  aria-valuenow="1" v-model="commentStar" ></el-rate>
+      </h4>
 
-
-      <hr />
+      <hr style="margin-top:0;" />
       <div class="am-margin-horizontal-lg details">
 
         <h3>地址：<small><a style="font-size:16px;" href="javascript:void(0)" @click="toDetialsMap">{{dates.detailsAddr}}</a></small></h3>
@@ -113,12 +116,10 @@
               <p>{{dates.info}}</p>
             </div>
           </h3>
-          <h4 class="am-margin-horizontal-lg  bigStar" v-if="ableToComments">点击评价：
-            <el-rate  @change="change"  :disabled="ableComments"  aria-valuenow="1" v-model="commentStar" ></el-rate>
-          </h4>
+
         <div class="">
           <div v-for="(item,index) of dates.image" :key="item">
-            <h3>    <img :src="item" style="width:80%;" class="am-img-responsive" alt="" />
+            <h3>    <img :src="item" style="width:100%; margin:0 auto;"  alt="" />
               <div class="inShort">
                 {{dates.shortInfos[index]}}
               </div>
@@ -289,19 +290,23 @@ flex-direction: column;
 }
 .stars{
   display: flex;
-      padding-top: 10px;
 }
 .left-box{
   flex: 1;
   border-right: 1px solid black;
   height: 80%;
-  margin-top:4%;
+  margin-top:6%;
   text-align: center;
 }
 .left-box div:nth-child(1){
+
   line-height: 37px;
   width: 100%;
 }
+.sContainer{
+    display: inline;
+}
+
 .right-box{
 
   flex: 1;
@@ -309,9 +314,9 @@ flex-direction: column;
   flex-direction: column;
 }
 .right-box span{
+  height: 23px;
   display: flex;
     padding-left: 9%;
-  flex: 1;
 }
 .right-box span div:nth-child(1){
   width: 50px;
@@ -359,12 +364,23 @@ margin: 20px 20px;
   font-size: 14px;
 color: #5e6d82;
 }
+.right-box span:nth-child(1){
+  margin-top: 6%;
+}
 @media screen and (min-width:640px){
   .right-box span div:nth-child(1){
     width: 72px !important;
   }
 
 }
-
+.s{
+  color: #04be02;
+text-align: center;
+margin: 0 2.4rem 0;
+}
+.bigStar .el-rate__icon{
+  font-size: 30px !important;
+width: 30px !important;
+}
 
 </style>

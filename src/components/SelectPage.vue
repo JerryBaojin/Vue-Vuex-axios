@@ -1,10 +1,14 @@
 <template>
-<el-container>
+<el-container
+v-loading="cloading"
+ element-loading-text="拼命加载中"
+ element-loading-spinner="el-icon-loading"
+ element-loading-background="rgba(0, 0, 0, 0.8)"
+>
   <JsSdk ref="share"/>
 
-
-  <el-carousel >
-    <el-carousel-item v-for="item in items" :key="item">
+  <el-carousel height="auto">
+    <el-carousel-item v-for="item in items"  :key="item">
       <h3 class="imagH3">
         <img class="loop" :src="item"  alt="">
       </h3>
@@ -111,9 +115,6 @@
 <div class="returnMap">
   <router-link to="/DetailsMap/all">
 <img class="imap" src="static/img/map.png" alt="">
-<div class="">
-  打开地图
-</div>
 
 </router-link>
 </div>
@@ -131,6 +132,7 @@ import { Loading } from 'element-ui';
     data() {
       return {
         goodsBeginWith:0,
+        cloading:false,
         selectPageArray:[],
         itemsArray:[],
         bakArray:[],
@@ -196,6 +198,7 @@ import { Loading } from 'element-ui';
       ],
       Foodvalue:'',
       areaValue:"",
+      sUser:false,
         selectedOptions:[],
         input: '',
         sTimes:false
@@ -208,18 +211,15 @@ import { Loading } from 'element-ui';
                 //return a.star-b.star;
                 return parseInt(b.star)-parseInt(a.star);//降序
               });
-              console.log(  this.itemsArray)
           }else{
             this.itemsArray.sort(function(a,b){
                 //return a.star-b.star;
                 return parseInt(a.star)-parseInt(b.star);//降序
               });
-                console.log(  this.itemsArray)
           }
 
       },
       Foodvalue:function(x){
-
         if( this.areaValue=='所有区域' && x=="所有分类"){
             this.itemsArray=this.bakArray;
             return false;
@@ -234,7 +234,6 @@ import { Loading } from 'element-ui';
         if(x=='所有分类' && tg){
             this.itemsArray=this.selectPageArray;
         }else{
-
           if(tg){
               this.itemsArray=this.selectPageArray.filter((v)=>v.type==x);
           }else{
@@ -249,9 +248,7 @@ import { Loading } from 'element-ui';
       areaValue:function(x){
         let that=this;
         let tg=false;
-
         if( x=='所有区域' && this.Foodvalue=="所有分类"){
-
           this.itemsArray=this.bakArray;
           return false;
         }
@@ -287,12 +284,19 @@ import { Loading } from 'element-ui';
         this.itemsArray=this.selectPageArray.filter((v)=>{
           return Sreg.test(v.sname);
         });
-        console.log(this.itemsArray);
       },
       filter:function(value){
-        this.itemsArray=this.selectPageArray.filter((v)=>{
+        let that=this;
+      if(that.areaValue=="所有区域" || that.areaValue==""){
+        that.itemsArray=that.selectPageArray.filter((v)=>{
           return v.type==value;
         });
+      }else{
+        that.itemsArray=that.selectPageArray.filter((v)=>{
+          return v.type==value && v.address==that.areaValue;
+        });
+      }
+
       },
       getGoodS:function(loadingInstance=null,type=null){
         let that=this;
@@ -303,6 +307,7 @@ import { Loading } from 'element-ui';
             that.sTimes=true;
               that.areaValue=store;
               type=store;
+              that.sUser=true;
               this.$store.commit("newPart","");
             //地域筛选
           }
@@ -380,7 +385,22 @@ import { Loading } from 'element-ui';
         this.$router.push({path:"/shop/"+uuid})
       }
     },
+    updated:function(){
+      let h=document.getElementsByClassName("loop")[0].offsetHeight;
+      document.getElementsByClassName("el-carousel__container")[0].style.height=h+"px";
+    },
     mounted:function(){
+      while(document.getElementsByClassName("loop")[0].offsetHeight!=0){
+        let h=document.getElementsByClassName("loop")[0].offsetHeight;
+        document.getElementsByClassName("el-carousel__container")[0].style.height=h+"px";
+      }
+
+      window.addEventListener("resize",function(){
+        if(document.getElementsByClassName("loop").length!=0){
+          let h=document.getElementsByClassName("loop")[0].offsetHeight;
+          document.getElementsByClassName("el-carousel__container")[0].style.height=h+"px";
+        }
+      })
 
       // JSSDK
       let datesA={
@@ -395,6 +415,7 @@ import { Loading } from 'element-ui';
       this.getGoodS();
       let that=this;
       window.addEventListener("scroll",function(x){
+
         let total=document.body.scrollHeight;
         let domHeight= document.documentElement.clientHeight ;
         let scorllHeight=window.scrollY;
@@ -439,6 +460,13 @@ import { Loading } from 'element-ui';
         })
 
         that.selectPageArray=res.data.msgBox;
+
+        let store=this.$store.state.part;
+
+          if(store=='' && !that.sUser){
+          that.itemsArray=that.selectPageArray
+            //地域筛选
+          }
 
       },(e)=>{
         console.log(e)
@@ -506,7 +534,6 @@ margin: 0 auto !important;
 }
 .loop{
   width: 100%;
-  height: 100%;
 }
 .item{
   display: flex;
@@ -520,8 +547,8 @@ margin: 0 auto !important;
 }
 .area{
   position: absolute;
-    left: 73%;
-    top: 30%;
+    left: 83%;
+    top: 37%;
     font-size: 14px;
 }
 .item-right{
@@ -550,7 +577,7 @@ line-height: 40px;
   bottom: 20px;
   font-size: 16px;
   color: #2368c1;
-  left: 77%;
+  left: 80%;
 }
   header{
     margin: 0 0 5px;
@@ -576,7 +603,7 @@ line-height: 40px;
       color: #fff;
   }
   .imap{
-    width: 40px;
+    width: 60px;
 margin: 0 auto;
 display: block;
   }

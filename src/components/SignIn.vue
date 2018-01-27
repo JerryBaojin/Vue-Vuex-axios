@@ -1,14 +1,14 @@
 <template id="">
-  <el-form  :model="form"   ref="form"  label-width="100px">
+  <el-form  :model="form" label-position="top" ref="form"  label-width="100px">
 <JsSdk ref="share"/>
-  <el-form-item label="商户名称"  prop="name" :rules="[
+  <el-form-item  size="small" label="商户名称"  class="from-te" prop="name" :rules="[
       { required: true, message: '商店名称不能为空'}
     ]"
     >
     <el-input v-model="form.name" class="short" name="sname"  type="text" :maxlength="20"></el-input>
   </el-form-item>
 
-  <el-form-item label="商户位置"  prop="detailsAddr" :rules="[
+  <el-form-item size="small" class="from-te" label="商户位置"  prop="detailsAddr" :rules="[
       { required: true, message: '商铺位置不能为空'}
     ]"
     >
@@ -16,7 +16,7 @@
   </el-form-item>
 
 
-  <el-form-item label="所属区域"  prop="address" :rules="[
+  <el-form-item size="small" class="from-te" label="所属区域"  prop="address" :rules="[
       { required: true, message: '商铺区域不能为空'}
     ]" required>
     <el-select v-model="form.address" name="address" placeholder="请选择商铺区域">
@@ -31,7 +31,7 @@
 
 
 
-  <el-form-item label="餐饮类型"  prop="type" :rules="[
+  <el-form-item size="small" class="from-te" label="餐饮类型"  prop="type" :rules="[
       { required: true, message: '餐饮类型不能为空'}
     ]" required>
     <el-select v-model="form.type" name="type" placeholder="请选择餐饮类型">
@@ -42,31 +42,30 @@
     </el-select>
   </el-form-item>
 
-  <el-form-item label="商户简介" prop="type" :rules="[
+  <el-form-item class="from-te"  label="商户简介" prop="type" :rules="[
       { required: true, message: '商户简介'}
     ]" required>
     <el-input type="textarea" class="short" name="info" v-model="form.desc"></el-input>
   </el-form-item>
-<div style="color:red;text-align:center;">
-  请拖动下方的红色图标进行定位
-</div>
-  <el-form-item label="地理位置">
-    <div id="map" style="height:200px;max-width:320px;">
+
+  <el-form-item class="from-te" label="地理位置">
+    <div style="color:red;">
+      请拖动下方的红色图标进行定位(地图可缩放)
+    </div>
+    <div id="map" style="height:200px;max-width:360px;">
     </div>
     <div class="">
       当前位置:{{position.p.lat}},{{position.p.lng}};
 
     </div>
-    <div class="">
-      详细地址:{{position.details}}
-    </div>
+
   </el-form-item>
 
-  <el-form-item label="店主名称" style="display:none;">
+  <el-form-item class="from-te" label="店主名称" style="display:none;">
     <el-input v-model="form.uname" class="short" name="uname" type="text" ></el-input>
   </el-form-item>
 
-  <el-form-item label="联系方式" prop="phone" :rules="[
+  <el-form-item class="from-te" label="联系方式" prop="phone" :rules="[
       { required: true, message: '联系方式不能为空'},
 
     ]" required>
@@ -181,16 +180,17 @@ import JsSdk from '../components/JsSdk'
         })
       },
       onSubmit(formName) {
-
+        if(!this.isDraggled){
+          this.$message("请拖动地图，定位自己的位置!");
+          return false;
+        }
         if(this.pics.length<=2){
           alert("请至少上传3张图片");
           return false;
         }
+
         this.$confirm("目前暂不支持修改数据,请确认无误后提交!点击\"确定\"继续提交,点击\"取消\"重新修改").then(()=>{
-          if(!this.isDraggled){
-            this.$message("请拖动地图，定位自己的位置!");
-            return false;
-          }
+
           let pics=new Array();
           this.pics.map((v)=>{
             pics.push(v.response.path);
@@ -234,7 +234,6 @@ import JsSdk from '../components/JsSdk'
           postion.p=dates;
           this.$jsonp(`http://api.map.baidu.com/geocoder/v2/?location=${dates['lat']},${dates['lng']}&output=json&pois=0&ak=sabTgEGc8497zQY2x4sN0z13E3CwsnXM&extensions_town=extensions_town&latest_admin=1`).then(res=>{
             postion.details=res.result.formatted_address;
-
           },e=>{
             console.log(e)
           })
@@ -263,19 +262,14 @@ import JsSdk from '../components/JsSdk'
       map.addControl(new BMap.MapTypeControl({type:BMAP_MAPTYPE_CONTROL_HORIZONTAL,mapTypes:[BMAP_NORMAL_MAP ,BMAP_SATELLITE_MAP]}));
       map.enableScrollWheelZoom(true);
       map.setCurrentCity("内江");
-
-
-
       map.centerAndZoom(point, 15);
 
-      var html2 = `<div class="target" style="position: absolute; margin: 0pt; padding: 0pt; width: 160px; height: 26px; left: -10px; top: -35px; overflow: hidden;">
-                    <img id="hxnk.gif"  style="border:none;left:0px; top:0px; position:absolute;width:30px;height:28px;" src="static/img/3.png">
-				        </div>
-	`,
-
- marker = new BMap.Marker(point);        // 创建标注
-
-
+        var myIcon = new BMap.Icon("http://weixin.scnjnews.com/icons/map.png", new BMap.Size(40, 38), {
+            anchor: new BMap.Size(25, 35)
+        });
+        // 创建标注对象并添加到地图
+        var marker = new BMap.Marker(point, {icon: myIcon});
+      marker = new BMap.Marker(point,{icon:myIcon});        // 创建标注
       map.addOverlay(marker);
       marker.enableDragging();
       //初始化
@@ -289,6 +283,10 @@ import JsSdk from '../components/JsSdk'
   }
 </script>
 <style scoped>
+
+.from-te{
+  margin: 0 !important;
+}
 .inoutTextarea{
   padding: 20px ;
 }

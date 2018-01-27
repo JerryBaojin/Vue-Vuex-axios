@@ -32,23 +32,6 @@ html,body{height:100%}
 
 }
 
-@media screen and (min-width: 380px) {
-.title{margin:0 auto;width:320px;padding:60px 0px 20px}
-.title img{width:100%;}
-.szq,.dxq,.zzx,.wyx,.lcs{width:120px; margin:30px auto 0px;}
-.szq img,.dxq img,.zzx img,.wyx img,.lcs img{width:100%; text-align: center;}
-.map{width:200px;margin:30px auto 30px}
-.map img{width:200px; text-align: center;}
-}
-
-@media screen and (max-width: 380px) {
-.title{margin:0 auto;width:80%;padding:40px 0px 10px}
-.title img{width:100%;}
-.szq,.dxq,.zzx,.wyx,.lcs{width:110px; margin:12px auto 0px;}
-.szq img,.dxq img,.zzx img,.wyx img,.lcs img{width:100%; text-align: center;}
-.map{width:180px;margin:20px auto 30px}
-.map img{width:100%; text-align: center;}
-}
 
 
 
@@ -60,6 +43,11 @@ input::-webkit-inner-spin-button{
   .el-message{
     min-width: 320px;
   width: 80% !important;
+  }
+  form label{
+  margin-bottom:0;
+  font-weight: unset;
+  padding: 0 !important;
   }
     #app{
       padding: 0px;
@@ -91,12 +79,17 @@ input::-webkit-inner-spin-button{
 
       }
 
-  .el-carousel__container{
-        height: 222px !important;
+
+      .details .el-rate__icon{
+        font-size: 30px !important;
+           width:30px;
+           color: #04be02 !important;
+           margin-top: 6px;
       }
+
   		  .bigStar .el-rate__icon{
             font-size: 20px !important;
-			width:20px;
+			         width:20px;
       }</style><script type=text/javascript>
   var u = navigator.userAgent;
     var isiOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/); //ios终端

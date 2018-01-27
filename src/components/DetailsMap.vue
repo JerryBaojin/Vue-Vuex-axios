@@ -1,7 +1,15 @@
 <template>
-      <div class="f">
+      <div class="f"
+      v-loading="cloading"
+       element-loading-text="拼命加载中,请稍等"
+       element-loading-spinner="el-icon-loading"
+       element-loading-background="rgba(0, 0, 0, 0.8)"
+      >
             <JsSdk ref="share"/>
             <div id="map" >
+            </div>
+            <div class="home" @click="toMain">
+                <el-button type="primary" round>回到列表</el-button>
             </div>
       </div>
 </template>
@@ -15,7 +23,13 @@ import JsSdk from '../components/JsSdk'
     name:"DetailsMap",
     data(){
       return {
+        cloading:true,
         title:"asd"
+      }
+    },
+    methods:{
+      toMain:function(){
+        this.$router.push({path:"/pickpage"});
       }
     },
     computed:{
@@ -48,6 +62,9 @@ import JsSdk from '../components/JsSdk'
           let ponits=res.data.msgBox;
 
           var map = new BMap.Map("map");
+          map.addEventListener("tilesloaded",function(){
+              that.cloading=false;
+          })
           // 创建地图实例
           if(this.$route.params.id=='all'){
               var point = new BMap.Point(105.06648486343,29.593761858443);
@@ -133,7 +150,18 @@ import JsSdk from '../components/JsSdk'
   }
 </script>
 <style media="screen">
+.home{
+  position: fixed;
+  bottom: 6%;
+  right: 31%;
+  color: red;
+  font-size: larger;
+  font-weight: bold;
+}
 
+.home img{
+  margin-left: 10%;
+}
   html,body,#app,#map,.f{
     height: 100%;
   }
