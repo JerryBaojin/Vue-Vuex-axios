@@ -3,7 +3,7 @@ $dDates=(array)json_decode(file_get_contents("php://input"));
 if(!$dDates){
 $dDates=$_POST;
 }
-$db=new mysqli("192.168.20.104","root","102098hchab","weixin");
+$db=new mysqli(00000,000,0,00);
 $preparArray=array(
   "status"=>400
 );
